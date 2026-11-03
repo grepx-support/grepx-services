@@ -1,0 +1,28 @@
+"""Fields of task requests and the tasks projection."""
+from enum import Enum
+
+
+class TaskField(str, Enum):
+    TASK_ID = "task_id"
+    TITLE = "title"
+    DESCRIPTION = "description"
+    DUE_AT = "due_at"
+    ASSIGNEE_ID = "assignee_id"
+    ASSIGNEE_NAME = "assignee_name"
+    ASSIGNEE_EMAIL = "assignee_email"
+    ASSIGNEE_PHONE = "assignee_phone"
+    CREATED_BY = "created_by"
+    ACTOR_ID = "actor_id"
+    ACTOR_IS_MANAGER = "actor_is_manager"
+    REF_TYPE = "ref_type"
+    REF_ID = "ref_id"
+    REF_LABEL = "ref_label"
+    STATE = "state"
+    IMPORTANT = "important"
+    REMIND = "remind"
+    PHASE = "phase"
+    CHECKLIST = "checklist"
+    REMINDED_AT = "reminded_at"
+    EVENTS = "events"
+    TENANT_ID = "tenant_id"
+    LINK = "link"

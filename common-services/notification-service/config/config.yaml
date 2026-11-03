@@ -1,0 +1,7 @@
+service_name: notification-service
+snapshot_table: notifications
+description: "Sends email/SMS/WhatsApp from templates with admin on/off + channel settings; circuit breaker per channel. Keywords: message, email, sms, whatsapp"
+project: platform
+owns: [notifications]  # tables this service is the system of record for (kept in its own database)
+tables:            # created in this service's own database by setup.sh (table: [indexed fields])
+  notifications: [template, channel, delivery]

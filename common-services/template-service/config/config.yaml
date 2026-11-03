@@ -1,0 +1,8 @@
+service_name: template-service
+snapshot_table: templates
+description: "Message templates per product + admin custom wording with safe {placeholders}. Keywords: wording, automatic messages"
+project: platform
+owns: [message_templates, message_settings]  # tables this service is the system of record for (kept in its own database)
+tables:            # created in this service's own database by setup.sh (table: [indexed fields])
+  message_templates: []
+  message_settings: []

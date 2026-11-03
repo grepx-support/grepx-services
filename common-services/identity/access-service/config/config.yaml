@@ -1,0 +1,9 @@
+service_name: access-service
+snapshot_table: access_requests
+description: "Role ladder (from config roles:), volunteer roles, permission catalogue, personal permissions, effective permissions. Keywords: rbac, authorization, staff"
+project: platform
+owns: [user_access, staff_roles, permission_catalog]  # tables this service is the system of record for (kept in its own database)
+tables:            # created in this service's own database by setup.sh (table: [indexed fields])
+  user_access: [role, staff_role_id]
+  staff_roles: []
+  permission_catalog: []

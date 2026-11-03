@@ -1,0 +1,10 @@
+service_name: booking-service
+snapshot_table: booking_requests
+description: "Interest, bookings, cancel, move, check-in, attendance (attended / no-show / not eligible); event reminders; closes events. Keywords: rsvp, attendance, kiosk, walk-in"
+project: platform
+owns: [bookings]  # tables this service is the system of record for (kept in its own database)
+tables:            # created in this service's own database by setup.sh (table: [indexed fields])
+  bookings: [event_id, person_id, slot_id, state]
+subscriptions:     # reactions to other services' tables (handler = module.function in src/)
+  - {table: events, handler: jobs.handle_event, when: "status = 'ACCEPTED' AND state = 'completed'"}
+  - {table: ticks, handler: jobs.handle_tick, when: "to_service = '{service}' AND status = 'NEW'"}

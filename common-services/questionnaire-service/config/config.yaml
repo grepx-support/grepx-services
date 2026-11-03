@@ -1,0 +1,6 @@
+service_name: questionnaire-service
+snapshot_table: questionnaire_requests
+description: "Screening questionnaires and chat flows; the rules come from the product. Keywords: screening, chatbot, quiz, eligibility"
+project: platform
+owns: []  # tables this service is the system of record for (kept in its own database)
+tables: {}         # stateless — no database tables

@@ -1,0 +1,13 @@
+"""Why an event request is rejected."""
+from enum import Enum
+
+
+class ReasonCode(str, Enum):
+    MISSING_FIELD = "MISSING_FIELD"
+    INVALID_DATE = "INVALID_DATE"
+    INVALID_CAPACITY = "INVALID_CAPACITY"
+    UNKNOWN_EVENT = "UNKNOWN_EVENT"
+    TOO_MANY_IMAGES = "TOO_MANY_IMAGES"
+    TOO_EARLY = "TOO_EARLY"
+    ALREADY_COMPLETED = "ALREADY_COMPLETED"
+    NOT_COMPLETED = "NOT_COMPLETED"

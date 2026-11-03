@@ -1,0 +1,10 @@
+service_name: recognition-service
+snapshot_table: recognition_requests
+description: "Certificates and vouchers for people who attended a completed event. Keywords: certificate, voucher, reward"
+project: platform
+owns: [certificates, vouchers]  # tables this service is the system of record for (kept in its own database)
+tables:            # created in this service's own database by setup.sh (table: [indexed fields])
+  certificates: [person_id, event_id]
+  vouchers: [person_id, event_id]
+subscriptions:     # reactions to other services' tables (handler = module.function in src/)
+  - {table: events, handler: jobs.handle_event, when: "status = 'ACCEPTED' AND state = 'completed'"}

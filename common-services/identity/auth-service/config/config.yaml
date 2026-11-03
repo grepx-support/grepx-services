@@ -1,0 +1,7 @@
+service_name: auth-service
+snapshot_table: auth_requests
+description: "Login credentials, sessions (JWT), password change/reset links. Keywords: login, password, token, authentication"
+project: platform
+owns: []  # tables this service is the system of record for (kept in its own database)
+tables:            # created in this service's own database by setup.sh (table: [indexed fields])
+  credentials: [email]

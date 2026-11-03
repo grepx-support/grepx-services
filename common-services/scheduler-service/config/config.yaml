@@ -1,0 +1,8 @@
+service_name: scheduler-service
+snapshot_table: schedule_requests
+description: "Recurring/daily schedules that emit ticks to target services. Keywords: cron, job, reminder, timer"
+project: platform
+owns: [schedules]  # tables this service is the system of record for (kept in its own database)
+tables:            # created in this service's own database by setup.sh (table: [indexed fields])
+  schedules: [target_service]
+on_start: ticker.start   # the background ticker that turns schedules into tick rows

@@ -1,0 +1,7 @@
+service_name: slot-service
+snapshot_table: slot_requests
+description: "Time slots per event with capacity rules. Keywords: booking slots, capacity, appointment"
+project: platform
+owns: [slots]  # tables this service is the system of record for (kept in its own database)
+tables:            # created in this service's own database by setup.sh (table: [indexed fields])
+  slots: [event_id]

@@ -1,0 +1,7 @@
+service_name: people-service
+snapshot_table: people_requests
+description: "Generic person records: name, email, phone, photo, invite/referral code, calendar token; product fields via a profile plugin. Keywords: person, profile, contact, member"
+project: platform
+owns: [people]
+tables:
+  people: [email, phone, ref_code, referred_by, cal_token]

@@ -1,0 +1,7 @@
+service_name: checklist-service
+snapshot_table: checklist_requests
+description: "Reusable checklists (playbooks) applied to any target as dated tasks; idempotent. Keywords: playbook, template tasks"
+project: platform
+owns: [checklist_templates]  # tables this service is the system of record for (kept in its own database)
+tables:            # created in this service's own database by setup.sh (table: [indexed fields])
+  checklist_templates: []

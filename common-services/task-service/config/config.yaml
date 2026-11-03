@@ -1,0 +1,9 @@
+service_name: task-service
+snapshot_table: task_requests
+description: "Tasks with owners, due dates, board states, history; due-soon reminders. Keywords: todo, planning, kanban, reminder"
+project: platform
+owns: [tasks]  # tables this service is the system of record for (kept in its own database)
+tables:            # created in this service's own database by setup.sh (table: [indexed fields])
+  tasks: [assignee_id, ref_id, state, due_at]
+subscriptions:     # reactions to other services' tables (handler = module.function in src/)
+  - {table: ticks, handler: jobs.handle_tick, when: "to_service = '{service}' AND status = 'NEW'"}

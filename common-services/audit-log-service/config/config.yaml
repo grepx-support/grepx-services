@@ -1,0 +1,7 @@
+service_name: audit-log-service
+snapshot_table: audit_log
+description: "Append-only audit trail of business decisions. Keywords: audit, compliance, history"
+project: platform
+owns: [audit_log]  # tables this service is the system of record for (kept in its own database)
+tables:            # created in this service's own database by setup.sh (table: [indexed fields])
+  audit_log: [entity_type, entity_id, actor_user_id]

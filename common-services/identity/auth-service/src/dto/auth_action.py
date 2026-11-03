@@ -1,0 +1,13 @@
+"""Actions auth-service accepts."""
+from enum import Enum
+
+
+class AuthAction(str, Enum):
+    REGISTER = "REGISTER"
+    LOGIN = "LOGIN"
+    CHANGE_PASSWORD = "CHANGE_PASSWORD"
+    SET_PASSWORD = "SET_PASSWORD"
+    RESET_REQUEST = "RESET_REQUEST"
+    RESET_CONFIRM = "RESET_CONFIRM"
+    LOGIN_EXTERNAL = "LOGIN_EXTERNAL"
+    LINK_EXTERNAL = "LINK_EXTERNAL"

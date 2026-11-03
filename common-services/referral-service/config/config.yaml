@@ -1,0 +1,11 @@
+service_name: referral-service
+snapshot_table: referral_events
+description: "Invite-a-friend points (weights in config) and leaderboard. Keywords: referral, leaderboard, invite"
+project: platform
+owns: [referral_scores]  # tables this service is the system of record for (kept in its own database)
+tables:            # created in this service's own database by setup.sh (table: [indexed fields])
+  referral_scores: [points]
+subscriptions:     # reactions to other services' tables (handler = module.function in src/)
+  - {table: "{person.table}", handler: jobs.handle_person, when: "status = 'ACCEPTED' AND referred_by != ''"}
+  - {table: "{referral.conversion.table}", handler: jobs.handle_conversion, when: "status = 'ACCEPTED'",
+     recover: "status = 'ACCEPTED' AND {referral.conversion.field} > 0"}
