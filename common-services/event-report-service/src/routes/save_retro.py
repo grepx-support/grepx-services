@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """SAVE_RETRO — what went well, what to improve, actions (one per line), notes, rating 1–5."""
 from grepx_service import RequestContext
 

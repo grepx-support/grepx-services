@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """Google: verify the ID token (signature, audience = our client id, expiry) with google-auth; email must be verified."""
 from __future__ import annotations
 

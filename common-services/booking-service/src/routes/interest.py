@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """INTEREST — 'not sure yet': record interest (guests welcome). Never downgrades an existing booking."""
 from grepx_service import RequestContext
 

@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """LOGIN_EXTERNAL — sign in with a provider (Google): the verified email finds the account (donor, volunteer or admin).
 No account yet -> accepted with registered=false plus the verified email and name, so the product can create the person
 and then LINK_EXTERNAL. A provider login never grants a role: the role is whatever the account already has."""

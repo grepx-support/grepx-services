@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """booking-service: interest, booking with slots, cancel, move, check-in, marking rules, completion, reminders."""
 from datetime import date, timedelta
 from pathlib import Path

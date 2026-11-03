@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """task-service: create/update/status/claim/delete, edit policy, assignment notice, reminders."""
 from datetime import datetime
 from pathlib import Path

@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """REGISTER — create or replace a schedule (key = schedule_id, so re-registering at every start is idempotent)."""
 from grepx_service import RequestContext
 

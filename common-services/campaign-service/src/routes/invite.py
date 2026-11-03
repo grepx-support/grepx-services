@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """INVITE — personal invitations to filtered people (or an explicit list), skipping those already booked."""
 from grepx_service import RequestContext, local_today
 

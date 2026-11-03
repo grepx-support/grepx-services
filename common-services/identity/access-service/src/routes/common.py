@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """Projection helpers: read and rewrite a user's access row with recomputed effective permissions."""
 from grepx_service import RequestContext
 from grepx_common import Roles

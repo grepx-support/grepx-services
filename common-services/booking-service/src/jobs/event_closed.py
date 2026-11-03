@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """Reacts to an event being completed: everyone still interested/confirmed becomes a no-show (idempotent)."""
 from grepx_service import Emitter, Reader, now_iso, state_of
 

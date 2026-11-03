@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """CHANGE_PASSWORD — the signed-in user changes their own password (current one optional for admins' flows)."""
 from grepx_auth import hash_password, verify_password
 from grepx_service import RequestContext

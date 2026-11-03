@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """LINK_EXTERNAL — after the product created the person, attach the provider login to it (no password needed).
 The provider token is verified again, so only the owner of that email can link it."""
 from grepx_service import RequestContext

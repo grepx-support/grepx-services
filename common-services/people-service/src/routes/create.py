@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """CREATE — register a person (sign-up, walk-in, kiosk or import). Welcomes them and records who invited them."""
 import secrets
 

@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """MARK — staff set attendance on the board. Attended / no-show only on the event day; not eligible any day;
 completed events are locked."""
 from grepx_service import RequestContext, today_iso

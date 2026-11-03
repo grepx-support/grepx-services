@@ -1,3 +1,9 @@
+<!--
+  Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+  This file is part of the GrepX platform and is proprietary and confidential.
+  Unauthorised copying, use, modification or distribution is strictly prohibited.
+-->
+
 # grepx-services
 
 The generic GrepX services, released together. Each one owns its tables, takes request rows through Nexus, and reads

@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """Setting names: letters, digits, dots, dashes and underscores (e.g. SMTP_HOST, auto.welcome.channels). Pure."""
 import re
 

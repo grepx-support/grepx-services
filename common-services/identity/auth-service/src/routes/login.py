@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """LOGIN — verify credentials, issue a sealed access token carrying role and tenant."""
 from grepx_auth import verify_password
 from grepx_service import RequestContext

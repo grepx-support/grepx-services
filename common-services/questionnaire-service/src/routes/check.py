@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """CHECK — evaluate the quick form with the product's rules. Nothing about the person is stored beyond this request row."""
 from grepx_service import RequestContext
 

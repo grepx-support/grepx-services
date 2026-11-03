@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """Event report numbers from plain rows: the booking funnel, show and fill rate, slots, messages, tasks. Pure.
 Product figures (e.g. units donated, blood groups) are added by the product's event_report plugin."""
 from collections import Counter

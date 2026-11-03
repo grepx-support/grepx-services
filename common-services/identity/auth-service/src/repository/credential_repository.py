@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """CredentialRepository — auth-service's private store (password hashes never touch the bus).
 
 Backed by grepx_store, so the database (SQLite, PostgreSQL, MongoDB) is chosen in config, not here.

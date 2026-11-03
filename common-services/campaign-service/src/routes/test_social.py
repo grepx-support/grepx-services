@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """TEST_SOCIAL — read the social account with the saved credentials (nothing is posted)."""
 import grepx_contracts as gc
 from grepx_service import RequestContext

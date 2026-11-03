@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """Issue certificates and vouchers for a completed event (idempotent per person + event)."""
 
 from grepx_service import Emitter, Reader, notify

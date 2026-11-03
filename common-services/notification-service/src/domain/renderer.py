@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """Render a message: admin custom wording wins, else the channel's built-in body, else the generic text body.
 
 Placeholders are plain {name} substitution — never executable template code —

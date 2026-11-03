@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """PUBLISH_SOCIAL — post an event (caption, poster image, link) to the chosen networks: Facebook Page, Instagram,
 LinkedIn page, X, Telegram channel. Every attempt is recorded in social_posts with the network's answer."""
 import grepx_contracts as gc

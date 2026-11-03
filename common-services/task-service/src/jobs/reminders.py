@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """Reacts to scheduler ticks (job task-reminders): remind assignees of tasks due within 24 h, at most every 12 h."""
 from datetime import datetime
 

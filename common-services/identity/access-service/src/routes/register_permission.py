@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """REGISTER_PERMISSION — add or relabel an entry in the permission catalogue (products seed theirs at bring-up)."""
 from grepx_service import RequestContext
 

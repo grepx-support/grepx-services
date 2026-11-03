@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """Recompute one referrer's score from the people they invited and how many converted (projection, idempotent).
 
 Where people live, what "converted" means and the points are deployment settings (the product deployment file):

@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 """CLONE — copy an event (details, pictures, optionally slot layout) to a new date and title; optionally its checklist."""
 
 from grepx_service import RequestContext, local_today, now_iso

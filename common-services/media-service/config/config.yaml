@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 service_name: media-service
 snapshot_table: media_requests
 description: "Image uploads → resized WebP in local/S3 storage. Keywords: image, photo, upload, picture, avatar"

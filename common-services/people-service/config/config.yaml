@@ -1,3 +1,7 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
 service_name: people-service
 snapshot_table: people_requests
 description: "Generic person records: name, email, phone, photo, invite/referral code, calendar token; product fields via a profile plugin. Keywords: person, profile, contact, member"
