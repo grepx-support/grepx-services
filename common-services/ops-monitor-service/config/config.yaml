@@ -1,0 +1,11 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+service_name: ops-monitor-service
+description: "Read-only live operations screen: every request and verdict as it happens, traces, service health, headline numbers and a live map of places (all set by the deployment's monitor: section). Keywords: monitor, ops, live, map, wall screen, command centre, dashboard, trace, observability"
+project: platform
+discover: monitor.subscriptions   # one subscription per request table (from grepx_contracts) + dead letters + monitor.watch
+web_app: web.create_app           # its own page and API next to /health and /metrics (still plain WSGI)
+tables:                           # created in this service's own database by setup.sh (table: [indexed fields])
+  geo_cache: [address]            # address -> coordinates, so each address is looked up once

@@ -1,0 +1,101 @@
+<!doctype html>
+<!-- Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved. Proprietary and confidential. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Live operations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<link rel="stylesheet" href="static/app.css">
+</head>
+<body>
+<div id="app" class="app" hidden>
+  <header class="top">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"></span>
+      <div>
+        <h1 id="title">Live</h1>
+        <p id="subtitle" class="muted"></p>
+      </div>
+    </div>
+    <nav class="tabs" aria-label="View">
+      <button type="button" class="tab" data-view="map" aria-pressed="true">Map</button>
+      <button type="button" class="tab" data-view="system" aria-pressed="false">System</button>
+    </nav>
+    <div class="status">
+      <span id="live" class="live"><span class="dot"></span><span id="live-text">Connecting…</span></span>
+      <span id="clock" class="mono muted"></span>
+      <button type="button" id="logout" class="ghost">Sign out</button>
+    </div>
+  </header>
+
+  <section id="kpis" class="kpis" aria-label="Headline numbers"></section>
+
+  <main class="stage">
+    <div id="map" class="map" role="region" aria-label="Map"></div>
+    <canvas id="graph" class="graph" hidden aria-label="Services and the requests flowing between them"></canvas>
+    <p id="map-note" class="map-note" hidden></p>
+
+    <aside class="panel wire" aria-label="Live requests">
+      <div class="panel-head">
+        <h2>The wire</h2>
+        <div class="chips" role="group" aria-label="Filter">
+          <button type="button" class="chip" data-filter="all" aria-pressed="true">All</button>
+          <button type="button" class="chip" data-filter="problems" aria-pressed="false">Problems</button>
+        </div>
+      </div>
+      <ol id="wire" class="wire-list"></ol>
+      <p class="panel-foot muted">Personal details are never shown here · click a line to trace it</p>
+    </aside>
+
+    <aside class="panel side" aria-label="Places and health">
+      <section>
+        <h2 id="places-title">Places</h2>
+        <ol id="places" class="places"></ol>
+      </section>
+      <section>
+        <h2>Why requests were refused</h2>
+        <ol id="reasons" class="reasons"></ol>
+      </section>
+      <section>
+        <h2>Services <span id="svc-count" class="muted"></span></h2>
+        <div id="services" class="services"></div>
+      </section>
+    </aside>
+
+    <div class="layers" role="group" aria-label="Map layers">
+      <label><input type="checkbox" data-layer="places" checked> Places</label>
+      <label><input type="checkbox" data-layer="pulses" checked> Live activity</label>
+      <label><input type="checkbox" data-layer="heat" checked> Heat</label>
+    </div>
+
+    <aside id="trace" class="trace" hidden aria-label="Trace">
+      <div class="panel-head">
+        <h2>Trace <span id="trace-id" class="mono accent"></span></h2>
+        <button type="button" id="trace-close" class="ghost" aria-label="Close trace">Close</button>
+      </div>
+      <p id="trace-summary" class="muted"></p>
+      <ol id="trace-steps" class="steps"></ol>
+    </aside>
+  </main>
+</div>
+
+<div id="login" class="login" hidden>
+  <form id="login-form" class="login-card">
+    <span class="mark big" aria-hidden="true"></span>
+    <h1>Live operations</h1>
+    <p class="muted">Sign in with an account that may see the operations screen.</p>
+    <label>Email <input id="email" type="email" autocomplete="username" required></label>
+    <label>Password <input id="password" type="password" autocomplete="current-password" required></label>
+    <button type="submit" class="primary">Sign in</button>
+    <p id="login-error" class="error" role="alert"></p>
+  </form>
+</div>
+
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="static/app.js"></script>
+</body>
+</html>
