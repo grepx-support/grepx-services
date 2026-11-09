@@ -1,5 +1,10 @@
-/* Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved. Proprietary and confidential.
- *
+/*
+ * Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+ * This file is part of the GrepX platform and is proprietary and confidential.
+ * Unauthorised copying, use, modification or distribution is strictly prohibited.
+ */
+
+/*
  * The live operations screen. Generic: everything product-specific (title, map centre, what a place is, which numbers)
  * arrives from api/config and api/board. All text from the server is put on the page with textContent, never as HTML.
  */

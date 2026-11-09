@@ -1,4 +1,9 @@
-/* Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved. Proprietary and confidential. */
+/*
+ * Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+ * This file is part of the GrepX platform and is proprietary and confidential.
+ * Unauthorised copying, use, modification or distribution is strictly prohibited.
+ */
+
 :root {
   --bg: #05080d;
   --panel: rgba(10, 16, 24, 0.82);
