@@ -1,0 +1,11 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+service_name: lead-service
+snapshot_table: lead_requests
+project: platform
+description: "Enquiries from a product's public website (request a demo, contact us): kept as leads the platform operator follows up (new, contacted, won, lost) and announced by email to the addresses the deployment names. Keywords: lead, enquiry, demo request, contact form, sales, CRM"
+owns: [leads]
+tables:
+  leads: [stage, product]          # "stage", never "status": status is the row's own envelope field
