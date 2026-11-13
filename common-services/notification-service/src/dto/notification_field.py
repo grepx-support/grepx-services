@@ -17,3 +17,4 @@ class NotificationField(str, Enum):
     DELIVERY = "delivery"
     ERROR = "error"
     SENT_AT = "sent_at"
+    ATTACHMENTS = "attachments"      # [{name, mime, data_b64}] - files carried by channels that can (email)

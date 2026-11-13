@@ -22,7 +22,8 @@ class Channel(ABC):
     def configured(self) -> bool: ...
 
     @abstractmethod
-    def send(self, recipient: str, subject: str, body: str, html: str | None) -> None: ...
+    def send(self, recipient: str, subject: str, body: str, html: str | None) -> None:
+        """Deliver one message. Channels that can carry files also take attachments=[{name, mime, data (bytes)}]."""
 
     def check(self) -> str:
         """Sign in to the provider without sending anything; a readable confirmation, or raise with the provider's error."""

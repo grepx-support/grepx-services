@@ -2,7 +2,7 @@
 # This file is part of the GrepX platform and is proprietary and confidential.
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
-"""Email over SMTP (587 STARTTLS or 465 SSL)."""
+"""Email over SMTP (587 STARTTLS or 465 SSL), with files attached when the message has them (a PDF order, an invoice)."""
 import os
 import smtplib
 from email.message import EmailMessage
@@ -33,11 +33,18 @@ class SmtpEmailChannel(Channel):
         with self._connect():
             return f"Signed in to {self.host} as {self.user or self.sender}"
 
-    def send(self, recipient, subject, body, html=None) -> None:
+    def build(self, recipient, subject, body, html=None, attachments=None) -> EmailMessage:
         msg = EmailMessage()
         msg["Subject"], msg["From"], msg["To"] = subject, self.sender, recipient
         msg.set_content(body)
         if html:
             msg.add_alternative(html, subtype="html")
+        for a in attachments or []:
+            main, _, sub = (a.get("mime") or "application/octet-stream").partition("/")
+            msg.add_attachment(a["data"], maintype=main, subtype=sub or "octet-stream", filename=a.get("name") or "file")
+        return msg
+
+    def send(self, recipient, subject, body, html=None, attachments=None) -> None:
+        msg = self.build(recipient, subject, body, html, attachments)
         with self._connect() as smtp:
             smtp.send_message(msg)

@@ -3,6 +3,8 @@
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
 from .base import Channel, ChannelResult
-from .factory import ChannelFactory
+from .factory import ChannelFactory, whatsapp
+from .meta_whatsapp import MetaWhatsAppChannel
+from .smtp_email import SmtpEmailChannel
 
-__all__ = ["Channel", "ChannelResult", "ChannelFactory"]
+__all__ = ["Channel", "ChannelResult", "ChannelFactory", "MetaWhatsAppChannel", "SmtpEmailChannel", "whatsapp"]

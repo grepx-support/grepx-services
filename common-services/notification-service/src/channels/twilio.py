@@ -35,7 +35,7 @@ class TwilioChannel(Channel):
     def check(self) -> str:
         return f"Connected to Twilio account “{self._call('.json').get('friendly_name', self.sid)}”"
 
-    def send(self, recipient, subject, body, html=None) -> None:
+    def send(self, recipient, subject, body, html=None, attachments=None) -> None:
         self._call("/Messages.json", urllib.parse.urlencode({"From": self.address(self.sender), "To": self.address(recipient), "Body": body}).encode())
 
 

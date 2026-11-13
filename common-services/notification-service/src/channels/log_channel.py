@@ -16,5 +16,5 @@ class LogChannel(Channel):
     def configured(self) -> bool:
         return True
 
-    def send(self, recipient, subject, body, html=None) -> None:
+    def send(self, recipient, subject, body, html=None, attachments=None) -> None:
         logger.info("[message to %s] %s", recipient[-4:], subject)

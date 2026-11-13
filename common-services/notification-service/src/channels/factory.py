@@ -8,7 +8,17 @@ from __future__ import annotations
 from .base import Channel
 from .log_channel import LogChannel
 from .smtp_email import SmtpEmailChannel
+from .meta_whatsapp import MetaWhatsAppChannel
 from .twilio import TwilioSmsChannel, TwilioWhatsAppChannel
+
+
+def whatsapp(env) -> Channel:
+    """WHATSAPP_PROVIDER picks meta or twilio; unset: Meta when its keys are there, else Twilio."""
+    meta, twilio = MetaWhatsAppChannel(env), TwilioWhatsAppChannel(env)
+    choice = (env.get("WHATSAPP_PROVIDER") or "").lower()
+    if choice in ("meta", "twilio"):
+        return meta if choice == "meta" else twilio
+    return meta if meta.configured() or not twilio.configured() else twilio
 
 
 class ChannelFactory:
@@ -25,5 +35,5 @@ class ChannelFactory:
         else:
             import os
             env = {**os.environ, **{k: v for k, v in (settings or {}).items() if v not in (None, "")}}
-            channel = {c.name: c for c in (SmtpEmailChannel(env), TwilioSmsChannel(env), TwilioWhatsAppChannel(env))}.get(name)
+            channel = {c.name: c for c in (SmtpEmailChannel(env), TwilioSmsChannel(env), whatsapp(env))}.get(name)
         return (channel, True) if channel and channel.configured() else (self.fallback, False)
