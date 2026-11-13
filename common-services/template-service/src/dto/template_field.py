@@ -16,3 +16,4 @@ class TemplateField(str, Enum):
     ENABLED = "enabled"
     CHANNELS = "channels"
     TEMPLATE_KEY = "template_key"
+    FOR_TENANT = "for_tenant"        # settings of one business (key "<tenant>:<template>"); empty = the platform default

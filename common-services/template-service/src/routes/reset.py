@@ -5,9 +5,10 @@
 """RESET — drop custom wording and channel choices; built-in design applies again."""
 from grepx_service import RequestContext
 
+from domain import settings_key
 from dto import SETTINGS_TABLE, TemplateField as F
 
 
 def handle(ctx: RequestContext) -> None:
-    key = ctx.text(F.TEMPLATE_KEY)
-    ctx.emitter.submit(SETTINGS_TABLE, key, "DELETED", {F.TEMPLATE_KEY.value: key})
+    key, tenant = ctx.text(F.TEMPLATE_KEY), ctx.text(F.FOR_TENANT)
+    ctx.emitter.submit(SETTINGS_TABLE, settings_key(key, tenant), "DELETED", {F.TEMPLATE_KEY.value: key, F.FOR_TENANT.value: tenant})

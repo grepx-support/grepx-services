@@ -51,9 +51,9 @@ def h():
     return harness
 
 
-def send(h, channel="email", template="welcome", **extra):
+def send(h, channel="email", template="welcome", key=None, **extra):
     return h.call("notifications", "notification-service", {"action": "SEND", "template": template, "channel": channel,
-                                                              "recipient": "a@b.sg", "values": {"first_name": "Ann"}, **extra})
+                                                              "recipient": "a@b.sg", "values": {"first_name": "Ann"}, **extra}, key)
 
 
 def test_email_should_render_and_send(h):
@@ -139,3 +139,47 @@ def test_test_send(h):
     v = h.call("notifications", "notification-service", {"action": "TEST_SEND", "channel": "sms", "recipient": "+6591234567"})
     assert v.fields["delivery"] == "FAILED" and "provider down" in v.fields["error"]
     assert h.call("notifications", "notification-service", {"action": "TEST_SEND", "channel": "pigeon", "recipient": "x"}).reason == "UNKNOWN_CHANNEL"
+
+
+# ---------------- a business's own settings; trying failed sends again ----------------
+def test_a_business_setting_wins_over_the_default(h):
+    h.seed("message_settings", "welcome", {"enabled": True, "channels": ["email"]})
+    h.seed("message_settings", "hft:welcome", {"enabled": False, "channels": ["email"]})
+    assert send(h, tenant_id="hft").fields["delivery"] == "SKIPPED"
+    assert send(h, tenant_id="other").fields["delivery"] == "SENT"
+
+
+def test_retry_waits_grow_and_stop_after_four_tries():
+    from datetime import datetime, timezone
+    from domain import retry
+    now = datetime(2026, 1, 1, 12, 0, tzinfo=timezone.utc)
+    row = {"_key": "k", "action": "SEND", "delivery": "FAILED", "sent_at": "2026-01-01T11:50:00+00:00", "template": "t", "x": 1}
+    never = lambda key: False  # noqa: E731
+    assert retry.due([row], now, never) == [row]                                     # 10 min > 5 min wait
+    assert retry.due([{**row, "attempt": 2}], now, never) == []                        # needs 30 min
+    assert retry.due([{**row, "attempt": 4}], now, never) == []                        # gave up
+    assert retry.due([row], now, lambda key: key == "k~2") == []                       # already tried again
+    assert retry.due([{**row, "action": "TEST_SEND"}], now, never) == []
+    nxt = retry.again({**row, "attempt": 2, "retry_of": "k"})
+    assert nxt["attempt"] == 3 and nxt["retry_of"] == "k" and "x" not in nxt and retry.next_key({**row, "attempt": 2, "retry_of": "k"}) == "k~3"
+
+
+def test_try_again_now_and_the_job(h):
+    from datetime import datetime, timedelta, timezone
+    from jobs import handle_tick
+    from nexus_api import NexusApplication, Row
+    from nexus_testkit import MemoryClient
+    first = send(h, channel="sms", key="n1", tenant_id="hft")
+    assert first.fields["delivery"] == "FAILED" and first.fields["attempt"] == 1
+    retry = lambda **f: h.call("notifications", "notification-service", {"action": "RETRY", **f})  # noqa: E731
+    assert retry(key="n1", tenant_id="other").reason == "NOT_FAILED"                   # not that business's
+    assert retry(key="n1", tenant_id="hft").fields["key"] == "n1~2"
+    assert retry(key="n1", tenant_id="hft").reason == "ALREADY_RETRIED"
+    second = h.read.accepted_one("notifications", "n1~2")
+    assert second["attempt"] == 2 and second["retry_of"] == "n1" and second["delivery"] == "FAILED"
+    app = NexusApplication(MemoryClient(h.engine), "x")
+    tick = lambda key, when: handle_tick(app, Row(key, {"job": "notify-retry", "status": "NEW"}), cfg, when)  # noqa: E731
+    assert tick("t1", datetime.now(timezone.utc)) == 0                                  # too soon
+    assert tick("t2", datetime.now(timezone.utc) + timedelta(minutes=31)) == 1          # n1~2 -> n1~3
+    h.settle()
+    assert h.read.accepted_one("notifications", "n1~3")["attempt"] == 3

@@ -45,3 +45,11 @@ def test_reset_should_remove_settings(h):
     call(h, action="SAVE", template_key="welcome", text="x")
     call(h, action="RESET", template_key="welcome")
     assert h.read.accepted_one("message_settings", "welcome") is None
+
+
+def test_a_business_keeps_its_own_settings_beside_the_default(h):
+    assert call(h, action="SAVE", template_key="welcome", for_tenant="hft", enabled=False, channels=["sms"]).ok
+    assert h.read.accepted_one("message_settings", "welcome") is None
+    assert h.read.accepted_one("message_settings", "hft:welcome")["channels"] == ["sms"]
+    call(h, action="RESET", template_key="welcome", for_tenant="hft")
+    assert h.read.accepted_one("message_settings", "hft:welcome") is None

@@ -9,3 +9,5 @@ project: platform
 owns: [notifications]  # tables this service is the system of record for (kept in its own database)
 tables:            # created in this service's own database by setup.sh (table: [indexed fields])
   notifications: [template, channel, delivery]
+subscriptions:     # the scheduler's tick: send failed messages again (jobs/tick.py)
+  - {table: ticks, handler: jobs.handle_tick, when: "to_service = '{service}' AND status = 'NEW'"}

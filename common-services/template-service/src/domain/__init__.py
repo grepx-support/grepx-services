@@ -3,5 +3,6 @@
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
 from .placeholders import placeholders_in
+from .settings_key import settings_key
 
-__all__ = ["placeholders_in"]
+__all__ = ["placeholders_in", "settings_key"]

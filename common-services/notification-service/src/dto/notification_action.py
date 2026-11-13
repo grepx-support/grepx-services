@@ -10,3 +10,4 @@ class NotificationAction(str, Enum):
     SEND = "SEND"
     TEST_CHANNEL = "TEST_CHANNEL"
     TEST_SEND = "TEST_SEND"          # send a short test message on one channel to one address (the Integrations page)
+    RETRY = "RETRY"                  # try a failed send again now (the Outbox's "Try again")

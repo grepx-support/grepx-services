@@ -31,6 +31,13 @@ def integration_settings(ctx: RequestContext) -> dict:
     return open_settings(ctx.read.accepted(gc.settings.APP_SETTINGS))
 
 
+def settings_for(ctx: RequestContext, template: str) -> dict | None:
+    """The business's own choice for this message first ("<tenant>:<template>"), else the platform default."""
+    tenant = ctx.text(F.TENANT_ID)
+    own = ctx.read.accepted_one(SETTINGS_TABLE, f"{tenant}:{template}") if tenant else None
+    return own or ctx.read.accepted_one(SETTINGS_TABLE, template)
+
+
 MAX_ATTACHED = 8 * 1024 * 1024
 
 
@@ -48,7 +55,7 @@ def handle(ctx: RequestContext) -> None:
     recipient, channel_name = ctx.text(F.RECIPIENT), ctx.text(F.CHANNEL)
     if not recipient:
         return ctx.reject(ReasonCode.MISSING_RECIPIENT)
-    settings = ctx.read.accepted_one(SETTINGS_TABLE, ctx.text(F.TEMPLATE))
+    settings = settings_for(ctx, ctx.text(F.TEMPLATE))
     allowed = (settings or {}).get("channels") or template.get("channels") or []
     if ctx.get(F.AUTO, True) and ((settings and settings.get("enabled") is False) or channel_name not in allowed):
         return ctx.accept({F.DELIVERY: Delivery.SKIPPED})
@@ -66,4 +73,5 @@ def handle(ctx: RequestContext) -> None:
         delivery, error = Delivery.FAILED, f"{channel.name} temporarily unavailable (circuit open)"
     except Exception as exc:  # delivery problems are recorded, never crash the service
         delivery, error = Delivery.FAILED, str(exc)[:200]
-    ctx.accept({F.SUBJECT: message.subject, F.BODY: message.body, F.DELIVERY: delivery, F.ERROR: error, F.SENT_AT: now_iso()})
+    ctx.accept({F.SUBJECT: message.subject, F.BODY: message.body, F.DELIVERY: delivery, F.ERROR: error, F.SENT_AT: now_iso(),
+                F.ATTEMPT: int(ctx.get(F.ATTEMPT) or 1)})

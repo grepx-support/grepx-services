@@ -6,6 +6,7 @@
 from grepx_service import ActionDispatcher
 
 from dto import NotificationAction
+from . import retry
 from . import send
 from . import test_channel
 from . import test_send
@@ -15,5 +16,6 @@ ROUTES = {
     NotificationAction.SEND: send.handle,
     NotificationAction.TEST_CHANNEL: test_channel.handle,
     NotificationAction.TEST_SEND: test_send.handle,
+    NotificationAction.RETRY: retry.handle,
 }
 handle = ActionDispatcher(ROUTES, NotificationAction, TABLE)

@@ -17,4 +17,8 @@ class NotificationField(str, Enum):
     DELIVERY = "delivery"
     ERROR = "error"
     SENT_AT = "sent_at"
+    TENANT_ID = "tenant_id"
+    ATTEMPT = "attempt"              # 1 for the first try; later tries are new rows (domain/retry.py)
+    RETRY_OF = "retry_of"            # the first try's key
+    KEY = "key"                      # RETRY: which failed send to try again now
     ATTACHMENTS = "attachments"      # [{name, mime, data_b64}] - files carried by channels that can (email)
