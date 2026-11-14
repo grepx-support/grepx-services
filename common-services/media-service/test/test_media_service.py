@@ -54,3 +54,12 @@ def test_delete_should_remove_file(h):
     v = process(h, png(10, 10), "picture")
     assert h.call("media_requests", "media-service", {"action": "DELETE", "media_id": v.fields["media_id"]}).ok
     assert Deps.storage.get(v.fields["key"]) is None
+
+
+def test_logo_keeps_transparency_as_png(h):
+    out = io.BytesIO()
+    Image.new("RGBA", (1600, 400), (255, 0, 0, 0)).save(out, "PNG")
+    v = process(h, out.getvalue(), "logo")
+    assert v.ok and (v.fields["width"], v.fields["height"]) == (800, 200) and v.fields["content_type"] == "image/png"
+    stored = Image.open(io.BytesIO(Deps.storage.get(v.fields["key"])))
+    assert stored.format == "PNG" and stored.mode == "RGBA" and stored.getpixel((0, 0))[3] == 0

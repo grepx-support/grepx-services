@@ -74,3 +74,22 @@ def test_a_month_from_settings_to_final(h):
     assert call(h, action="RUN", month="2026-11").reason == "ALREADY_FINAL"
     assert call(h, action="ADJUST", month="2026-11", employee_id="e1", kind="bonus", amount=1).reason == "ALREADY_FINAL"
     assert h.call("payroll_requests", "payroll-service", {"tenant_id": "b2", "action": "MONTH", "month": "2026-11"}).fields["payslips"] == []
+
+
+def test_payslips_go_out_only_once_locked_and_to_reachable_people(h):
+    h.seed("employees", "e1", {**{k: v for k, v in SALARIED.items() if k != "_key"}, "tenant_id": "b1", "email": "meera@x.in", "phone": ""})
+    pdf = [{"name": "payslip.pdf", "mime": "application/pdf", "data_b64": "JVBERg==", "url": "https://k/api/v1/files/t/payslip.pdf"}]
+    assert call(h, action="SEND_PAYSLIP", month="2026-11", employee_id="e1").reason == "NO_RUN"
+    call(h, action="RUN", month="2026-11")
+    assert call(h, action="SEND_PAYSLIP", month="2026-11", employee_id="e1").reason == "MONTH_NOT_FINAL"
+    call(h, action="FINALISE", month="2026-11")
+    assert call(h, action="SEND_PAYSLIP", month="2026-11", employee_id="e2", channels=["email"]).reason == "NO_CONTACT"
+    assert call(h, action="SEND_PAYSLIP", month="2026-11", employee_id="e1", channels=["fax"]).reason == "INVALID_CHANNEL"
+    sent = call(h, action="SEND_PAYSLIP", month="2026-11", employee_id="e1", channels=["email", "whatsapp"], attachments=pdf, actor_name="Omar")
+    assert sent.ok and sent.fields["payslip"]["sent"][0]["channels"] == ["email"]          # no phone: WhatsApp left out
+    queued = h.rows("notifications")
+    assert len(queued) == 1 and queued[0]["template"] == "payslip" and queued[0]["attachments"] == pdf
+    assert call(h, action="SEND_PAYSLIP", month="2026-11", employee_id="e1").ok                 # sent again: a new message
+    assert len(h.rows("notifications")) == 2
+    assert h.call("payroll_requests", "payroll-service", {"tenant_id": "b2", "action": "SEND_PAYSLIP", "month": "2026-11",
+                                                          "employee_id": "e1"}).reason == "NO_RUN"

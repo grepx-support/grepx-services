@@ -19,6 +19,7 @@ class PayrollAction(str, Enum):
     RUN = "RUN"                    # work out the month's payslips (again, while the run is a draft)
     FINALISE = "FINALISE"          # lock the month: payslips can be sent and no longer change
     MONTH = "MONTH"                # the month's run and payslips
+    SEND_PAYSLIP = "SEND_PAYSLIP"  # send one locked payslip to the person (email / WhatsApp / SMS, the PDF attached)
 
 
 class ReasonCode(str, Enum):
@@ -30,6 +31,9 @@ class ReasonCode(str, Enum):
     INVALID_AMOUNT = "INVALID_AMOUNT"
     ALREADY_FINAL = "ALREADY_FINAL"
     NO_RUN = "NO_RUN"
+    MONTH_NOT_FINAL = "MONTH_NOT_FINAL"
+    INVALID_CHANNEL = "INVALID_CHANNEL"
+    NO_CONTACT = "NO_CONTACT"
 
 
 __all__ = ["PayrollAction", "ReasonCode", "SETTINGS", "RUNS", "SLIPS", "ADJUSTMENTS", "EMPLOYEES", "ATTENDANCE", "LEAVES"]

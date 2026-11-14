@@ -2,7 +2,8 @@
 # This file is part of the GrepX platform and is proprietary and confidential.
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
-"""SMS and WhatsApp through Twilio's REST API (Template Method: only the address format differs)."""
+"""SMS and WhatsApp through Twilio's REST API (Template Method: only the address format differs).
+Twilio fetches files itself, so a file goes as its public link (MediaUrl) - attachments without a link are left out."""
 import base64
 import json
 import os
@@ -35,8 +36,14 @@ class TwilioChannel(Channel):
     def check(self) -> str:
         return f"Connected to Twilio account “{self._call('.json').get('friendly_name', self.sid)}”"
 
+    def form(self, recipient: str, body: str, attachments=None) -> list[tuple[str, str]]:
+        media = [("MediaUrl", a["url"]) for a in attachments or [] if a.get("url")][:10] if self.carries_files else []
+        return [("From", self.address(self.sender)), ("To", self.address(recipient)), ("Body", body), *media]
+
+    carries_files = False
+
     def send(self, recipient, subject, body, html=None, attachments=None) -> None:
-        self._call("/Messages.json", urllib.parse.urlencode({"From": self.address(self.sender), "To": self.address(recipient), "Body": body}).encode())
+        self._call("/Messages.json", urllib.parse.urlencode(self.form(recipient, body, attachments)).encode())
 
 
 class TwilioSmsChannel(TwilioChannel):
@@ -45,3 +52,4 @@ class TwilioSmsChannel(TwilioChannel):
 
 class TwilioWhatsAppChannel(TwilioChannel):
     name, prefix, from_env = "whatsapp", "whatsapp:", "TWILIO_WHATSAPP_FROM"
+    carries_files = True

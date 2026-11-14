@@ -6,7 +6,7 @@
 from grepx_service import ActionDispatcher
 
 from dto import PayrollAction
-from . import adjust, finalise, month, run, set_settings, settings
+from . import adjust, finalise, month, run, send_payslip, set_settings, settings
 
 TABLE = "payroll_requests"
 ROUTES = {
@@ -17,5 +17,6 @@ ROUTES = {
     PayrollAction.RUN: run.handle,
     PayrollAction.FINALISE: finalise.handle,
     PayrollAction.MONTH: month.handle,
+    PayrollAction.SEND_PAYSLIP: send_payslip.handle,
 }
 handle = ActionDispatcher(ROUTES, PayrollAction, TABLE)

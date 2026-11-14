@@ -42,9 +42,11 @@ MAX_ATTACHED = 8 * 1024 * 1024
 
 
 def attachments(raw: list) -> list[dict] | None:
-    """[{name, mime, data_b64}] -> [{name, mime, data}]; None when together they are over 8 MB."""
+    """[{name, mime, data_b64, url}] -> [{name, mime, data, url}]; None when together they are over 8 MB.
+    url (optional) is a public link to the same file, for channels that fetch files themselves."""
     files = [{"name": str(a.get("name") or "file")[:120], "mime": str(a.get("mime") or "application/octet-stream"),
-              "data": base64.b64decode(a.get("data_b64") or "")} for a in raw if isinstance(a, dict)]
+              "data": base64.b64decode(a.get("data_b64") or ""), **({"url": str(a["url"])} if a.get("url") else {})}
+             for a in raw if isinstance(a, dict)]
     return None if sum(len(f["data"]) for f in files) > MAX_ATTACHED else files
 
 
