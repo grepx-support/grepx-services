@@ -9,4 +9,5 @@ from enum import Enum
 class MediaKind(str, Enum):
     PICTURE = "picture"
     AVATAR = "avatar"
+    FILE = "file"           # an attachment kept as it is (PDF, photo, spreadsheet)
     LOGO = "logo"           # a business or organisation mark printed on documents (transparency kept, PNG)

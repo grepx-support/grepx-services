@@ -12,6 +12,7 @@ from . import set_permission
 from . import save_role
 from . import delete_role
 from . import register_permission
+from . import api_keys
 
 TABLE = "access_requests"
 ROUTES = {
@@ -21,5 +22,7 @@ ROUTES = {
     AccessAction.SAVE_ROLE: save_role.handle,
     AccessAction.DELETE_ROLE: delete_role.handle,
     AccessAction.REGISTER_PERMISSION: register_permission.handle,
+    AccessAction.CREATE_API_KEY: api_keys.create,
+    AccessAction.REVOKE_API_KEY: api_keys.revoke,
 }
 handle = ActionDispatcher(ROUTES, AccessAction, TABLE)

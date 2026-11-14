@@ -8,10 +8,12 @@ from grepx_service import ActionDispatcher
 from dto import MediaAction
 from . import process
 from . import delete
+from . import attach
 
 TABLE = "media_requests"
 ROUTES = {
     MediaAction.PROCESS: process.handle,
     MediaAction.DELETE: delete.handle,
+    MediaAction.ATTACH: attach.handle,
 }
 handle = ActionDispatcher(ROUTES, MediaAction, TABLE)

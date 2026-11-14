@@ -63,3 +63,17 @@ def test_logo_keeps_transparency_as_png(h):
     assert v.ok and (v.fields["width"], v.fields["height"]) == (800, 200) and v.fields["content_type"] == "image/png"
     stored = Image.open(io.BytesIO(Deps.storage.get(v.fields["key"])))
     assert stored.format == "PNG" and stored.mode == "RGBA" and stored.getpixel((0, 0))[3] == 0
+
+
+def attach(h, data, name):
+    Deps.storage.put("staging/f", data)
+    return h.call("media_requests", "media-service", {"action": "ATTACH", "staged_key": "staging/f", "name": name, "owner_id": "t1", "ref": "bill:9", "by": "Ann"})
+
+
+def test_attach_keeps_documents_and_refuses_programs(h):
+    v = attach(h, b"%PDF-1.4 hello", "../../Invoice 77.pdf")
+    assert v.ok and (v.fields["content_type"], v.fields["name"], v.fields["ref"]) == ("application/pdf", "Invoice 77.pdf", "bill:9")
+    assert Deps.storage.get(v.fields["key"]) == b"%PDF-1.4 hello"
+    assert attach(h, b"MZ\x90\x00", "virus.exe").reason == "NOT_ALLOWED"
+    assert attach(h, b"<html><script>x</script>", "a.txt").reason == "NOT_ALLOWED"
+    assert attach(h, b"a,b\n1,2", "data.csv").fields["content_type"] == "text/csv"

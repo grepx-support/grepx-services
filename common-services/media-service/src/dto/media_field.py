@@ -16,3 +16,8 @@ class MediaField(str, Enum):
     SIZE = "size"
     WIDTH = "width"
     HEIGHT = "height"
+    REF = "ref"            # the record a file is attached to ("bill:123")
+    NAME = "name"
+    NOTE = "note"
+    BY = "by"
+    AT = "at"

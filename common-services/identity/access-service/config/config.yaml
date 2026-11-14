@@ -4,10 +4,11 @@
 
 service_name: access-service
 snapshot_table: access_requests
-description: "Role ladder (from config roles:), volunteer roles, permission catalogue, personal permissions, effective permissions. Keywords: rbac, authorization, staff"
+description: "Role ladder (from config roles:), volunteer roles, permission catalogue, personal permissions, effective permissions; API keys per organisation (read / write, hash only). Keywords: rbac, authorization, staff, api key, token"
 project: platform
-owns: [user_access, staff_roles, permission_catalog]  # tables this service is the system of record for (kept in its own database)
+owns: [user_access, staff_roles, permission_catalog, api_keys]  # tables this service is the system of record for (kept in its own database)
 tables:            # created in this service's own database by setup.sh (table: [indexed fields])
   user_access: [role, staff_role_id]
   staff_roles: []
   permission_catalog: []
+  api_keys: [tenant_id]

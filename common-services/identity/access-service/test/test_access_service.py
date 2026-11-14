@@ -74,3 +74,14 @@ def test_register_permission_should_add_to_the_catalogue(h):
     assert call(h, action="REGISTER_PERMISSION", perm="export", label="Export data").ok
     assert h.read.accepted_one("permission_catalog", "export")["label"] == "Export data"
     assert not call(h, action="REGISTER_PERMISSION").ok
+
+
+def test_api_keys_create_and_revoke(h):
+    call = lambda **f: h.call("access_requests", "access-service", {"tenant_id": "t1", "actor_name": "Ann", **f})
+    k = call(action="CREATE_API_KEY", key_id="abcdefabcdef", secret_hash="a" * 64, scope="write", name="Shop sync")
+    assert k.ok and k.fields["scope"] == "write" and h.rows("api_keys")[0]["secret_hash"] == "a" * 64
+    assert call(action="CREATE_API_KEY", key_id="abcdefabcdef", secret_hash="a" * 64).reason == "INVALID_KEY"      # same id
+    assert call(action="CREATE_API_KEY", key_id="x", secret_hash="a" * 64).reason == "INVALID_KEY"
+    assert call(action="CREATE_API_KEY", key_id="bbbbbbbbbbbb", secret_hash="a" * 64, scope="admin").reason == "INVALID_SCOPE"
+    assert h.call("access_requests", "access-service", {"tenant_id": "t2", "action": "REVOKE_API_KEY", "key_id": "abcdefabcdef"}).reason == "UNKNOWN_KEY"
+    assert call(action="REVOKE_API_KEY", key_id="abcdefabcdef").fields["active"] is False

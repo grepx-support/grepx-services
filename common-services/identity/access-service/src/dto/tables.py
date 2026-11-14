@@ -10,3 +10,4 @@ class Table(str, Enum):
     USER_ACCESS = "user_access"
     STAFF_ROLES = "staff_roles"
     PERMISSION_CATALOG = "permission_catalog"
+    API_KEYS = "api_keys"            # an organisation's keys for other systems (hash of the secret only)

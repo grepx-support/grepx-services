@@ -4,8 +4,8 @@
 
 service_name: media-service
 snapshot_table: media_requests
-description: "Image uploads → resized WebP in local/S3 storage. Keywords: image, photo, upload, picture, avatar"
+description: "Image uploads → resized WebP in local/S3 storage; attachments (PDF, photos, office files) kept as they are on any record. Keywords: image, photo, upload, picture, avatar, attachment, file, document"
 project: platform
 owns: [media]  # tables this service is the system of record for (kept in its own database)
 tables:            # created in this service's own database by setup.sh (table: [indexed fields])
-  media: [owner_id]
+  media: [owner_id, ref]

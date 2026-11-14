@@ -12,7 +12,7 @@ from .common import Deps
 
 def handle(ctx: RequestContext) -> None:
     kind = ctx.text(F.KIND) or MediaKind.PICTURE.value
-    if kind not in {k.value for k in MediaKind}:
+    if kind not in PROFILES:                         # attachments go through ATTACH
         return ctx.reject(ReasonCode.UNKNOWN_KIND)
     store = Deps.store()
     data = store.get(ctx.text(F.STAGED_KEY))

@@ -9,3 +9,4 @@ from enum import Enum
 class MediaAction(str, Enum):
     PROCESS = "PROCESS"
     DELETE = "DELETE"
+    ATTACH = "ATTACH"      # keep a file as it is, attached to a record (ref)
