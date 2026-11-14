@@ -1,0 +1,12 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+service_name: compliance-service
+snapshot_table: compliance_requests
+description: "Recurring checks at each site of any business: readings with a safe range (temperatures, pH, pressure) and yes / no checklists, how often they are due, every record with who and when, out-of-range flags with the action taken, what is missing today, history for inspectors. Keywords: HACCP, food safety, audits, inspections, logs"
+project: platform
+owns: [check_points, check_logs]  # tables this service is the system of record for (kept in its own database)
+tables:            # created in this service's own database by setup.sh (table: [indexed fields])
+  check_points: [tenant_id, site_id]
+  check_logs: [tenant_id, site_id, point_id, date]
