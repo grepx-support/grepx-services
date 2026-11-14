@@ -134,3 +134,82 @@ def test_google_login_without_account_should_say_so_then_link_creates_the_login(
 def test_google_login_should_reject_bad_tokens_and_unknown_providers(h, google):
     assert google_login(h, "evil@elsewhere.com").reason == "INVALID_TOKEN"
     assert call(h, action="LOGIN_EXTERNAL", provider="myspace", id_token_enc="x").reason == "UNKNOWN_PROVIDER"
+
+
+# ---------------- two-step login (authenticator app) ----------------
+def test_totp_matches_the_rfc_example_and_codes_work_once():
+    import base64
+    from domain import totp
+    secret = base64.b32encode(b"12345678901234567890").decode()
+    assert totp.code_at(secret, 59 // 30) == "287082"                   # RFC 6238, SHA-1, T=59 (last six digits)
+    assert totp.matching_step(secret, "287082", 59) == 1
+    assert totp.matching_step(secret, "287 082", 59, last_step=1) is None  # spent
+    assert totp.matching_step(secret, "000000", 59) is None
+    assert totp.app_link(secret, "a@b.sg", "Spice Route").startswith("otpauth://totp/Spice%20Route:a%40b.sg?secret=")
+
+
+def switch_on(h, user="u1"):
+    import json, time
+    from domain import totp
+    started = call(h, action="TWO_STEP_START", user_id=user, issuer="Kitchen").fields
+    secret = Deps.box.open(started["secret_enc"])
+    assert "otpauth://" in Deps.box.open(started["app_link_enc"])
+    assert call(h, action="TWO_STEP_ENABLE", user_id=user, code="000000").reason == "WRONG_CODE"
+    on = call(h, action="TWO_STEP_ENABLE", user_id=user, code=totp.code_at(secret, int(time.time() // 30)))
+    return secret, json.loads(Deps.box.open(on.fields["recovery_enc"]))
+
+
+def test_two_step_login_needs_the_code_after_the_password(h):
+    import time
+    from domain import totp
+    register(h)
+    secret, codes = switch_on(h)
+    assert len(codes) == 10
+    assert call(h, action="TWO_STEP_STATUS", user_id="u1").fields["on"] is True
+    first = call(h, action="LOGIN", email="ann@x.sg", password_enc=Deps.box.seal("secret123"))
+    assert first.fields["two_step"] is True and not first.fields.get("token_enc")
+    challenge = first.fields["challenge_enc"]
+    assert call(h, action="LOGIN_CODE", challenge_enc=challenge, code="123456").reason == "WRONG_CODE"
+    assert call(h, action="LOGIN_CODE", challenge_enc=Deps.box.seal("junk"), code="1").reason == "CHALLENGE_EXPIRED"
+    # the code used to switch it on is spent; the next step's code works
+    nxt = totp.code_at(secret, int(time.time() // 30) + 1)
+    ok = call(h, action="LOGIN_CODE", challenge_enc=challenge, code=nxt)
+    assert Deps.tokens.verify(Deps.box.open(ok.fields["token_enc"]))["sub"] == "u1"
+    assert call(h, action="LOGIN_CODE", challenge_enc=challenge, code=nxt).reason == "WRONG_CODE"     # used once
+    # a recovery code works once
+    assert call(h, action="LOGIN_CODE", challenge_enc=challenge, code=codes[0].upper()).ok
+    assert call(h, action="LOGIN_CODE", challenge_enc=challenge, code=codes[0]).reason == "WRONG_CODE"
+
+
+def test_two_step_off_needs_password_and_code_unless_the_operator_does_it(h):
+    register(h)
+    _, codes = switch_on(h)
+    assert call(h, action="TWO_STEP_DISABLE", user_id="u1", password_enc=Deps.box.seal("nope"), code=codes[1]).reason == "INVALID_CREDENTIALS"
+    assert call(h, action="TWO_STEP_DISABLE", user_id="u1", password_enc=Deps.box.seal("secret123"), code=codes[1]).ok
+    assert "token_enc" in call(h, action="LOGIN", email="ann@x.sg", password_enc=Deps.box.seal("secret123")).fields
+    switch_on(h)
+    assert call(h, action="TWO_STEP_DISABLE", user_id="u1", by_admin=True).ok
+
+
+def test_microsoft_and_company_sign_in_check_signature_audience_and_issuer(monkeypatch):
+    import time
+    import jwt
+    from cryptography.hazmat.primitives.asymmetric import rsa
+    from providers import PROVIDERS, IdentityError
+    from providers import oidc
+    key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+
+    class Keys:
+        def get_signing_key_from_jwt(self, token):
+            return type("K", (), {"key": key.public_key()})()
+    monkeypatch.setattr(oidc, "_keys", lambda url: Keys())
+    ms = PROVIDERS["microsoft"]
+    good = {"sub": "s1", "aud": "app", "iss": "https://login.microsoftonline.com/t1/v2.0", "tid": "t1", "exp": int(time.time()) + 300,
+            "preferred_username": "Ann@Corp.com", "name": "Ann"}
+    tok = lambda **c: jwt.encode({**good, **c}, key, algorithm="RS256")  # noqa: E731
+    assert ms.verify(tok(), {"MICROSOFT_CLIENT_ID": "app"}).email == "ann@corp.com"
+    for bad, settings in ((tok(aud="other"), {"MICROSOFT_CLIENT_ID": "app"}), (tok(iss="https://evil/v2.0"), {"MICROSOFT_CLIENT_ID": "app"}),
+                          (tok(), {"MICROSOFT_CLIENT_ID": "app", "MICROSOFT_TENANT": "t2"}), (tok(exp=1), {"MICROSOFT_CLIENT_ID": "app"})):
+        with pytest.raises(IdentityError):
+            ms.verify(bad, settings)
+    assert not PROVIDERS["company"].configured({"OIDC_CLIENT_ID": "x"})

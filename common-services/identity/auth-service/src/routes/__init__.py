@@ -14,6 +14,11 @@ from . import reset_request
 from . import reset_confirm
 from . import login_external
 from . import link_external
+from . import login_code
+from . import two_step_start
+from . import two_step_enable
+from . import two_step_disable
+from . import two_step_status
 
 TABLE = "auth_requests"
 ROUTES = {
@@ -25,5 +30,10 @@ ROUTES = {
     AuthAction.RESET_CONFIRM: reset_confirm.handle,
     AuthAction.LOGIN_EXTERNAL: login_external.handle,
     AuthAction.LINK_EXTERNAL: link_external.handle,
+    AuthAction.LOGIN_CODE: login_code.handle,
+    AuthAction.TWO_STEP_START: two_step_start.handle,
+    AuthAction.TWO_STEP_ENABLE: two_step_enable.handle,
+    AuthAction.TWO_STEP_DISABLE: two_step_disable.handle,
+    AuthAction.TWO_STEP_STATUS: two_step_status.handle,
 }
 handle = ActionDispatcher(ROUTES, AuthAction, TABLE)

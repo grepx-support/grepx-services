@@ -41,14 +41,24 @@ def role_of(ctx, user_id: str) -> str:
     return str((row or {}).get("role") or Roles.of(ctx.cfg).member)
 
 
-def accept_session(ctx, cred) -> None:
-    """Issue the sealed access token for a verified person (password or provider login)."""
+CHALLENGE_HOURS = 5 / 60
+
+
+def accept_session(ctx, cred, second_step_done: bool = False, remember: bool | None = None) -> None:
+    """Issue the sealed access token for a verified person (password or provider login). With two-step login on, the
+    first step only earns a 5-minute challenge; LOGIN_CODE turns it into a session once the app's code matches."""
     deps = Deps.get()
+    if cred.two_step and not second_step_done:
+        challenge = deps.tokens.issue({"sub": cred.user_id, "remember": bool(ctx.get("remember", False) if remember is None else remember)}, hours=CHALLENGE_HOURS, kind="two_step")
+        return ctx.accept({"password_enc": "", "id_token_enc": "", "two_step": True, "registered": True,
+                           "challenge_enc": deps.box.seal(challenge)})
     role = role_of(ctx, cred.user_id)
-    hours = session_hours(Roles.of(ctx.cfg).is_staff(role), bool(ctx.get("remember", False)))
+    remember = bool(ctx.get("remember", False)) if remember is None else remember
+    hours = session_hours(Roles.of(ctx.cfg).is_staff(role), remember)
     token = deps.tokens.issue({"sub": cred.user_id, "role": role, "tenant": cred.tenant_id}, hours=hours)
     ctx.accept({"password_enc": "", "id_token_enc": "", "user_id": cred.user_id, "role": role, "expires_hours": hours,
-                "token_enc": deps.box.seal(token), "registered": True})
+                "token_enc": deps.box.seal(token), "registered": True,
+                "two_step": False, "challenge_enc": "", "code": ""})
 
 
 def provider_identity(ctx):

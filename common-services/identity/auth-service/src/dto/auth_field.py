@@ -23,3 +23,10 @@ class AuthField(str, Enum):
     ID_TOKEN_ENC = "id_token_enc"
     REGISTERED = "registered"
     NAME = "name"
+    TWO_STEP = "two_step"                 # LOGIN answer: true = a code is needed (see LOGIN_CODE)
+    CHALLENGE_ENC = "challenge_enc"       # sealed, 5 minutes: proves the password (or provider) step passed
+    CODE = "code"                         # six digits from the app, or a recovery code
+    SECRET_ENC = "secret_enc"             # TWO_STEP_START answer: the key to type into the app
+    APP_LINK_ENC = "app_link_enc"         # TWO_STEP_START answer: otpauth:// link for the QR code
+    RECOVERY_ENC = "recovery_enc"         # TWO_STEP_ENABLE answer: the ten recovery codes, shown once
+    ISSUER = "issuer"                     # the name shown in the authenticator app

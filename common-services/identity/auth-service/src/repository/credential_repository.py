@@ -24,6 +24,10 @@ class Credential:
     tenant_id: str
     reset_requested_at: float = 0.0
     external: dict = field(default_factory=dict)   # provider -> subject (e.g. {"google": "1234…"})
+    two_step: str = ""             # sealed authenticator secret when two-step login is on
+    two_step_pending: str = ""     # sealed secret being set up (on once a first code matches)
+    recovery: list = field(default_factory=list)   # hashes of the unused recovery codes
+    last_step: int = 0             # the newest code used (a code works once)
 
 
 class CredentialRepository:

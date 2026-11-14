@@ -15,3 +15,8 @@ class AuthAction(str, Enum):
     RESET_CONFIRM = "RESET_CONFIRM"
     LOGIN_EXTERNAL = "LOGIN_EXTERNAL"
     LINK_EXTERNAL = "LINK_EXTERNAL"
+    LOGIN_CODE = "LOGIN_CODE"             # second step of a login: the app's code (or a recovery code)
+    TWO_STEP_START = "TWO_STEP_START"     # make a new authenticator key for the person
+    TWO_STEP_ENABLE = "TWO_STEP_ENABLE"   # first code matched: two-step login is on
+    TWO_STEP_DISABLE = "TWO_STEP_DISABLE" # off again (password and a code needed)
+    TWO_STEP_STATUS = "TWO_STEP_STATUS"   # on / off, recovery codes left, linked providers

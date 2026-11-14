@@ -6,7 +6,8 @@
 Adding Microsoft or Apple = one class + PROVIDERS entry; nothing else changes."""
 from .base import Identity, IdentityError, IdentityProvider
 from .google import GoogleProvider
+from .oidc import CompanyProvider, MicrosoftProvider, OidcProvider
 
-PROVIDERS: dict[str, IdentityProvider] = {p.name: p for p in (GoogleProvider(),)}
+PROVIDERS: dict[str, IdentityProvider] = {p.name: p for p in (GoogleProvider(), MicrosoftProvider(), CompanyProvider())}
 
-__all__ = ["Identity", "IdentityError", "IdentityProvider", "PROVIDERS"]
+__all__ = ["OidcProvider", "Identity", "IdentityError", "IdentityProvider", "PROVIDERS"]
