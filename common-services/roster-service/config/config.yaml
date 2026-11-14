@@ -1,0 +1,13 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+service_name: roster-service
+snapshot_table: roster_requests
+description: "Rosters for any business with several sites: shifts per person per site, clash checks, publishing a week, clock in / out with a PIN, worked against rostered hours and their cost. Keywords: shifts, scheduling, timesheet, attendance"
+project: platform
+owns: [shifts, attendance, clock_pins]  # tables this service is the system of record for (kept in its own database)
+tables:            # created in this service's own database by setup.sh (table: [indexed fields])
+  shifts: [tenant_id, site_id, employee_id, date]
+  attendance: [tenant_id, employee_id, date]
+  clock_pins: [tenant_id]
