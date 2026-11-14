@@ -1,0 +1,14 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+service_name: payroll-service
+snapshot_table: payroll_requests
+description: "Payroll for any business in several countries: monthly runs from salary or worked hours, overtime, unpaid leave, bonuses and advances, each country's statutory deductions as a plug-in with its rates in one settings record; payslips. Keywords: salary, wages, payslip, PF, ESI, CPF, superannuation, PAYG, TDS"
+project: platform
+owns: [payroll_settings, pay_runs, payslips, pay_adjustments]  # tables this service is the system of record for
+tables:            # created in this service's own database by setup.sh (table: [indexed fields])
+  payroll_settings: [tenant_id]
+  pay_runs: [tenant_id, month]
+  payslips: [tenant_id, month, employee_id]
+  pay_adjustments: [tenant_id, month, employee_id]

@@ -1,0 +1,13 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+service_name: fund-service
+snapshot_table: fund_requests
+description: "Funds and capital for any business: funds (equity, loans, grants, owner's capital), the parties who put money in, promises and when they are due, money received, where it was put (projects, places, purposes), money paid back, loan balances; what is pending, overdue, available, each party's share. Amounts carry their currency. Keywords: capital, investors, portfolio, funding, loans, partners"
+project: platform
+owns: [funds, fund_parties, fund_entries]  # tables this service is the system of record for
+tables:            # created in this service's own database by setup.sh (table: [indexed fields])
+  funds: [tenant_id]
+  fund_parties: [tenant_id]
+  fund_entries: [tenant_id, fund_id, party_id]
