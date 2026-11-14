@@ -21,6 +21,7 @@ def h():
     harness = ServiceHarness().add(cfg, "roster_requests", handle, cfg.live_criteria)
     harness.seed("employees", "e1", {"tenant_id": "b1", "name": "Meera", "sites": ["k1", "s1"], "pay": {"basis": "hourly", "rate": 200}})
     harness.seed("employees", "e2", {"tenant_id": "b1", "name": "Ravi", "sites": ["s1"], "pay": {"basis": "monthly", "rate": 34666.67, "weekly_hours": 40}})
+    harness.seed("leaves", "l1", {"tenant_id": "b1", "employee_id": "e2", "state": "approved", "first": "2026-11-18", "last": "2026-11-19", "type_name": "Sick leave"})
     harness.seed("employees", "x9", {"tenant_id": "b2", "name": "Other", "sites": ["z"]})
     return harness
 
@@ -51,7 +52,9 @@ def test_a_week_across_sites(h):
     assert call(h, action="SAVE_SHIFT", site_id="s1", employee_id="x9", date="2026-11-16", start="09:00", end="10:00").reason == "UNKNOWN_EMPLOYEE"
     assert call(h, action="SAVE_SHIFT", site_id="s1", date="2026-11-17", start="09:00", end="17:00").ok      # open shift
     assert call(h, action="SAVE_SHIFT", site_id="s1", employee_id="e2", date="2026-11-17", start="25:00", end="17:00").reason == "INVALID_TIME"
+    assert call(h, action="SAVE_SHIFT", site_id="s1", employee_id="e2", date="2026-11-19", start="09:00", end="17:00").reason == "ON_LEAVE"
     w = call(h, action="WEEK", week="2026-11-18").fields["week"]
+    assert w["leaves"][0]["employee_id"] == "e2"
     assert len(w["shifts"]) == 3 and w["summary"]["open_shifts"] == 1 and w["summary"]["people"][0]["minutes"] == 450 + 240
     assert len(call(h, action="WEEK", week="2026-11-18", site_id="k1").fields["week"]["shifts"]) == 1
     assert call(h, action="PUBLISH_WEEK", week="2026-11-16", site_id="s1").fields["published"] == 2

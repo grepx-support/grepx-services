@@ -8,6 +8,7 @@ from enum import Enum
 import grepx_contracts as gc
 
 SHIFTS, ATTENDANCE, PINS = "shifts", "attendance", "clock_pins"
+LEAVES = gc.leave.LEAVES          # leave-service's table (read only): nobody is rostered while on leave
 EMPLOYEES = gc.employee.EMPLOYEES  # employee-service's table (read only): pay basis for the cost of a week
 
 
@@ -32,6 +33,7 @@ class ReasonCode(str, Enum):
     WRONG_PIN = "WRONG_PIN"
     INVALID_PIN = "INVALID_PIN"
     NOT_AT_THIS_SITE = "NOT_AT_THIS_SITE"
+    ON_LEAVE = "ON_LEAVE"
 
 
-__all__ = ["RosterAction", "ReasonCode", "SHIFTS", "ATTENDANCE", "PINS", "EMPLOYEES"]
+__all__ = ["RosterAction", "ReasonCode", "SHIFTS", "ATTENDANCE", "PINS", "EMPLOYEES", "LEAVES"]

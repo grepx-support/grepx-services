@@ -9,7 +9,7 @@ from datetime import date, timedelta
 
 from grepx_service import RequestContext
 
-from dto import EMPLOYEES, SHIFTS, ReasonCode
+from dto import EMPLOYEES, LEAVES, SHIFTS, ReasonCode
 
 
 def tenant(ctx: RequestContext) -> str | None:
@@ -42,3 +42,16 @@ def employee(ctx: RequestContext, t: str, employee_id: str) -> dict | None:
 
 def employees(ctx: RequestContext, t: str) -> dict[str, dict]:
     return {e["_key"]: e for e in ctx.read.accepted(EMPLOYEES, tenant_id=t)}
+
+
+def on_leave(ctx: RequestContext, t: str, employee_id: str, day: str) -> dict | None:
+    """Approved leave of the person covering the day (leave-service)."""
+    for leave in ctx.read.accepted(LEAVES, tenant_id=t, employee_id=employee_id):
+        if leave.get("state") == "approved" and leave.get("first", "") <= day <= leave.get("last", ""):
+            return leave
+    return None
+
+
+def leaves_between(ctx: RequestContext, t: str, first: str, last: str) -> list[dict]:
+    return [plain(l) for l in ctx.read.accepted(LEAVES, tenant_id=t) if l.get("state") in ("approved", "pending")
+            and l.get("first", "") <= last and first <= l.get("last", "")]

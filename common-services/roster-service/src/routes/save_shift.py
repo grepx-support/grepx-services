@@ -3,12 +3,12 @@
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
 """SAVE_SHIFT - add or change one shift. Refused when the person already works then (at any site) or is not one of
-the business's employees; an open shift (nobody yet) is fine. A changed shift goes back to draft."""
+the business's employees, or is on approved leave that day; an open shift (nobody yet) is fine. A changed shift goes back to draft."""
 from grepx_service import RequestContext, new_key
 
 from domain import clashes, clean_shift
 from dto import SHIFTS, ReasonCode
-from .common import around, employee, plain, tenant
+from .common import around, employee, on_leave, plain, tenant
 
 
 def handle(ctx: RequestContext) -> None:
@@ -26,6 +26,9 @@ def handle(ctx: RequestContext) -> None:
         return ctx.reject(str(exc))
     if shift["employee_id"] and employee(ctx, t, shift["employee_id"]) is None:
         return ctx.reject(ReasonCode.UNKNOWN_EMPLOYEE)
+    away = shift["employee_id"] and on_leave(ctx, t, shift["employee_id"], shift["date"])
+    if away:
+        return ctx.reject(ReasonCode.ON_LEAVE, f"{away.get('type_name', 'leave')} {away['first']} - {away['last']}")
     shift_id = shift_id or new_key()[:12]
     clash = clashes({**shift, "shift_id": shift_id}, around(ctx, t, shift["date"]))
     if clash:

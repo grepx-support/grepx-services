@@ -10,7 +10,7 @@ from grepx_service import RequestContext
 
 from domain import week_of, week_summary
 from dto import ATTENDANCE, ReasonCode
-from .common import employees, plain, shifts_between, tenant
+from .common import employees, leaves_between, plain, shifts_between, tenant
 
 
 def handle(ctx: RequestContext) -> None:
@@ -27,4 +27,5 @@ def handle(ctx: RequestContext) -> None:
     worked = [plain(r) for r in ctx.read.accepted(ATTENDANCE, tenant_id=t) if a <= r.get("date", "") <= b
               and (not site or r.get("site_id") == site)]
     ctx.accept({"week": {"monday": a, "site_id": site, "shifts": sorted(shifts, key=lambda s: (s["date"], s["start"])),
-                         "summary": week_summary(shifts, employees(ctx, t)), "attendance": worked}})
+                         "summary": week_summary(shifts, employees(ctx, t)), "attendance": worked,
+                         "leaves": leaves_between(ctx, t, a, b)}})
