@@ -70,3 +70,28 @@ def test_a_fund_from_promise_to_payback(h):
     loan_now = call(h, action="FUND", fund_id=loan["fund_id"]).fields["totals"]
     assert loan_now["owed"] == 100000000 + 958300 - 5000000
     assert h.call("fund_requests", "fund-service", {"tenant_id": "b2", "action": "FUND", "fund_id": seed["fund_id"]}).reason == "UNKNOWN_FUND"
+
+
+def test_plan_projection_balance_sheet_and_utilisation(h):
+    from domain import clean_plan, project
+    from domain.projection import irr
+    plan = clean_plan({"horizon": 24, "discount_pct": 12, "payout_pct": 100, "uses": [{"purpose": "Outlet", "monthly_ebitda": 100000, "starts_in": 2, "ramp": 4}]})
+    p = project(plan, 100000000)                                  # 10 lakh in, earning up to 1 lakh a month
+    assert p["months"][1]["ebitda"] == 0 and p["months"][2]["ebitda"] == 2500000 and p["months"][5]["ebitda"] == 10000000
+    assert p["payback_month"] == 14 and p["roi_pct"] == 105.0 and p["irr_pct"] > 50 and p["npv"] > 0
+    assert irr([-100, 10]) is None
+    fund = call(h, action="SAVE_FUND", name="Growth", kind="equity", currency="INR").fields["fund"]
+    loan = call(h, action="SAVE_FUND", name="Loan", kind="loan", currency="INR").fields["fund"]
+    who = call(h, action="SAVE_PARTY", name="Asha").fields["party"]["party_id"]
+    for f, e in ((fund, {"kind": "receive", "party_id": who, "amount": 1000000}), (fund, {"kind": "allocate", "amount": 600000, "purpose": "Outlet"}),
+                 (fund, {"kind": "spend", "amount": 450000, "purpose": "Outlet"}), (fund, {"kind": "cost", "amount": 1000}),
+                 (loan, {"kind": "receive", "party_id": who, "amount": 500000}), (loan, {"kind": "interest", "party_id": who, "amount": 5000}),
+                 (loan, {"kind": "return", "party_id": who, "amount": 20000})):
+        assert call(h, action="RECORD", fund_id=f["fund_id"], **e).ok
+    assert call(h, action="SET_PLAN", fund_id=fund["fund_id"], plan={"payout_pct": 100, "uses": [{"purpose": "Outlet", "monthly_ebitda": 50000, "ramp": 3}]}).ok
+    one = call(h, action="FUND", fund_id=fund["fund_id"], actuals={"Outlet": [40000, 45000]}).fields
+    assert one["utilisation"][0]["pct"] == 75.0 and one["totals"]["utilised_pct"] == 75.0
+    assert one["projection"]["payback_month"] and one["parties"][0]["projected_payout"] > 0
+    assert one["against_plan"][0]["pct_of_plan"] == 85.0
+    sheet = call(h, action="OVERVIEW").fields["balance_sheet"]["INR"]
+    assert sheet["balances"] and sheet["liabilities_total"] == 48500000 and sheet["assets_total"] == 1000000 * 100 - 100000 + 500000 * 100

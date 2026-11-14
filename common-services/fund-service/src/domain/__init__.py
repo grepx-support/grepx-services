@@ -3,9 +3,11 @@
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
 """Fund rules (pure)."""
+from .balance import balance_sheet, utilisation
+from .projection import against_plan, clean_plan, project
 from .entries import FUND_KINDS, KINDS, NEEDS_PARTY, TAKES_CASH, clean_entry, clean_fund
 from .money import currency, major, minor
 from .totals import months, overdue, parties, totals, uses
 
-__all__ = ["FUND_KINDS", "KINDS", "NEEDS_PARTY", "TAKES_CASH", "clean_entry", "clean_fund", "currency", "major", "minor", "months",
+__all__ = ["against_plan", "balance_sheet", "clean_plan", "project", "utilisation", "FUND_KINDS", "KINDS", "NEEDS_PARTY", "TAKES_CASH", "clean_entry", "clean_fund", "currency", "major", "minor", "months",
            "overdue", "parties", "totals", "uses"]

@@ -7,11 +7,11 @@ from datetime import date
 
 from grepx_service import RequestContext
 
-from domain import months, overdue, parties, totals, uses
+from domain import against_plan, balance_sheet, clean_plan, months, overdue, parties, project, totals, uses, utilisation
 from dto import ReasonCode
 from .common import entries, funds, party_names, tenant
 
-ADD = ("committed", "received", "pending", "allocated", "returned", "costs", "available", "interest", "owed")
+ADD = ("committed", "received", "pending", "allocated", "spent", "returned", "costs", "available", "interest", "owed")
 
 
 def overview(ctx: RequestContext) -> None:
@@ -29,7 +29,10 @@ def overview(ctx: RequestContext) -> None:
         for k in ADD:
             cur[k] += tot[k]
     late = [{**o, "name": names.get(o["party_id"], "?")} for o in overdue(every, today)]
-    ctx.accept({"funds": out, "totals": per_currency, "overdue": late, "parties": [{"party_id": k, "name": v} for k, v in sorted(names.items(), key=lambda x: x[1])]})
+    for cur in per_currency.values():
+        cur["utilised_pct"] = round(cur["spent"] / cur["allocated"] * 100, 1) if cur["allocated"] else None
+    sheets = {c: balance_sheet([f for f in funds(ctx, t) if f["currency"] == c], every) for c in per_currency}
+    ctx.accept({"funds": out, "totals": per_currency, "balance_sheet": sheets, "overdue": late, "parties": [{"party_id": k, "name": v} for k, v in sorted(names.items(), key=lambda x: x[1])]})
 
 
 def fund(ctx: RequestContext) -> None:
@@ -41,5 +44,12 @@ def fund(ctx: RequestContext) -> None:
         return ctx.reject(ReasonCode.UNKNOWN_FUND)
     mine, names = entries(ctx, t, fund_id=f["fund_id"]), party_names(ctx, t)
     late = [{**o, "name": names.get(o["party_id"], "?")} for o in overdue(mine, ctx.text("today") or date.today().isoformat())]
-    ctx.accept({"fund": f, "totals": totals(mine, f.get("kind") == "loan"), "parties": parties(mine, names), "uses": uses(mine), "months": months(mine),
+    tot, plan = totals(mine, f.get("kind") == "loan"), f.get("plan") or clean_plan({})
+    who = parties(mine, names)
+    forecast = project(plan, tot["received"]) if plan["uses"] else None
+    for p in who:                                            # each party's expected payout over the horizon, by share
+        p["projected_payout"] = round((forecast or {}).get("paid_out", 0) * p["share_pct"] / 100)
+        p["roi_pct"] = round((p["returned"] - p["received"]) / p["received"] * 100, 1) if p["received"] else None
+    ctx.accept({"fund": f, "totals": tot, "parties": who, "uses": uses(mine), "months": months(mine), "utilisation": utilisation(mine),
+                "plan": plan, "projection": forecast, "against_plan": against_plan(plan, ctx.get("actuals") or {}),
                 "overdue": late, "entries": [{**e, "party": names.get(e.get("party_id"), "")} for e in reversed(mine)]})

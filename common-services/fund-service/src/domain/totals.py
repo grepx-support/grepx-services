@@ -7,7 +7,7 @@ pending / returned and share of what was paid in, the uses money was put to, the
 from __future__ import annotations
 
 FIELDS = {"commit": "committed", "receive": "received", "allocate": "allocated", "release": "released", "return": "returned",
-          "interest": "interest", "cost": "costs"}
+          "interest": "interest", "cost": "costs", "spend": "spent"}
 
 
 def live(entries: list[dict]) -> list[dict]:
@@ -19,6 +19,7 @@ def totals(entries: list[dict], loan: bool = False) -> dict:
     for e in live(entries):
         t[FIELDS[e["kind"]]] += int(e["amount"])
     t["allocated"] -= t.pop("released")
+    t["utilised_pct"] = round(t["spent"] / t["allocated"] * 100, 1) if t["allocated"] else None
     t["pending"] = max(0, t["committed"] - t["received"])
     t["available"] = t["received"] - t["allocated"] - t["costs"] - (0 if loan else t["returned"])   # loan repayments come from the business
     t["owed"] = t["received"] + t["interest"] - t["returned"]          # a loan's balance (equity: what the parties put in, net)

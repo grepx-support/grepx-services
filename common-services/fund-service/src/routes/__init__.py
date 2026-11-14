@@ -6,7 +6,7 @@
 from grepx_service import ActionDispatcher
 
 from dto import FundAction
-from . import record, save, views
+from . import plan, record, save, views
 
 TABLE = "fund_requests"
 ROUTES = {
@@ -16,5 +16,6 @@ ROUTES = {
     FundAction.REVERSE: record.reverse,
     FundAction.OVERVIEW: views.overview,
     FundAction.FUND: views.fund,
+    FundAction.SET_PLAN: plan.handle,
 }
 handle = ActionDispatcher(ROUTES, FundAction, TABLE)

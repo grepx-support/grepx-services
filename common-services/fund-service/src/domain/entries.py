@@ -8,6 +8,7 @@
   receive   money comes in from a party                          -> received (pending = committed - received)
   allocate  money is put to a use (a project, a place, a purpose) -> allocated
   release   money put to a use comes back unused                 -> allocated goes down
+  spend     money put to a use was actually spent (utilisation)  -> spent (no change to cash: it already left the fund)
   return    money goes back to a party (dividend, repayment)     -> returned
   interest  interest charged on a loan, owed to the lender       -> interest
   cost      a cost of the fund itself (fees, bank charges)       -> costs
@@ -17,7 +18,7 @@ from __future__ import annotations
 
 from datetime import date
 
-KINDS = ("commit", "receive", "allocate", "release", "return", "interest", "cost")
+KINDS = ("commit", "receive", "allocate", "release", "spend", "return", "interest", "cost")
 NEEDS_PARTY = ("commit", "receive", "return", "interest")
 TAKES_CASH = ("allocate", "return", "cost")         # a loan's repayments are paid by the business, not from the fund
 FUND_KINDS = ("equity", "loan", "grant", "owner")

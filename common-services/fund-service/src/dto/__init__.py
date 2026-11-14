@@ -14,7 +14,8 @@ class FundAction(str, Enum):
     RECORD = "RECORD"            # one movement: promise, money in, put to use, paid back, interest, cost
     REVERSE = "REVERSE"          # take an entry back (it stays, marked reversed - the history is never rewritten)
     OVERVIEW = "OVERVIEW"        # every fund with its totals, overdue promises, the business's totals per currency
-    FUND = "FUND"                # one fund: totals, each party's position and share, uses, monthly flow, entries
+    FUND = "FUND"                # one fund: totals, parties and shares, uses, utilisation, plan, projection, actual vs plan
+    SET_PLAN = "SET_PLAN"        # the fund's plan: expected EBITDA per use, start, ramp; horizon, discount, payout
 
 
 class ReasonCode(str, Enum):
