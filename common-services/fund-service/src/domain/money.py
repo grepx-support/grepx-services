@@ -32,3 +32,15 @@ def currency(code) -> str:
     if len(code) != 3 or not code.isalpha():
         raise ValueError("INVALID_CURRENCY")
     return code
+
+
+def convert(amount: int, frm: str, to: str, rate) -> int:
+    """Minor units of `frm` into minor units of `to` at `rate` (units of `to` for one unit of `frm`)."""
+    try:
+        r = Decimal(str(rate))
+    except (InvalidOperation, ValueError):
+        raise ValueError("INVALID_RATE")
+    if r <= 0 or r > 10 ** 9:
+        raise ValueError("INVALID_RATE")
+    shift = Decimal(10) ** (DECIMALS.get(to, 2) - DECIMALS.get(frm, 2))
+    return int((Decimal(amount) * r * shift).quantize(Decimal(1), rounding=ROUND_HALF_UP))

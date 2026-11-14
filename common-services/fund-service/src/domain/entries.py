@@ -47,7 +47,10 @@ def clean_fund(raw: dict) -> dict:
         raise ValueError("INVALID_KIND")
     try:
         rate = float(raw.get("rate_pct") or 0)
+        to_base = float(raw.get("rate_to_base") or 0)       # for business-wide totals when the fund is in another currency
     except (TypeError, ValueError):
         raise ValueError("INVALID_AMOUNT")
-    return {"name": name, "kind": kind, "rate_pct": rate, "purpose": " ".join(str(raw.get("purpose") or "").split())[:200],
+    if to_base < 0:
+        raise ValueError("INVALID_RATE")
+    return {"name": name, "kind": kind, "rate_pct": rate, "rate_to_base": to_base, "order": int(raw.get("order") or 0), "purpose": " ".join(str(raw.get("purpose") or "").split())[:200],
             "opened": str(raw.get("opened") or date.today().isoformat())[:10], "closed": bool(raw.get("closed"))}

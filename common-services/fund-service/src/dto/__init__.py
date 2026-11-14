@@ -15,6 +15,8 @@ class FundAction(str, Enum):
     REVERSE = "REVERSE"          # take an entry back (it stays, marked reversed - the history is never rewritten)
     OVERVIEW = "OVERVIEW"        # every fund with its totals, overdue promises, the business's totals per currency
     FUND = "FUND"                # one fund: totals, parties and shares, uses, utilisation, plan, projection, actual vs plan
+    STATEMENT = "STATEMENT"      # one party's statement: per fund promised, in, back, share; their movements in a period
+    SEND_STATEMENT = "SEND_STATEMENT"  # email / WhatsApp the statement (the PDF the caller made attached); each send kept
     SET_PLAN = "SET_PLAN"        # the fund's plan: expected EBITDA per use, start, ramp; horizon, discount, payout
 
 
@@ -28,7 +30,10 @@ class ReasonCode(str, Enum):
     INVALID_AMOUNT = "INVALID_AMOUNT"
     INVALID_DATE = "INVALID_DATE"
     INVALID_CURRENCY = "INVALID_CURRENCY"
-    CURRENCY_MISMATCH = "CURRENCY_MISMATCH"    # one currency per fund for now; converting comes later
+    CURRENCY_MISMATCH = "CURRENCY_MISMATCH"    # a fund's currency can't change once money moved
+    RATE_NEEDED = "RATE_NEEDED"                # money in another currency needs its exchange rate
+    INVALID_RATE = "INVALID_RATE"
+    NO_CONTACT = "NO_CONTACT"
     NOT_ENOUGH_AVAILABLE = "NOT_ENOUGH_AVAILABLE"
     ALREADY_REVERSED = "ALREADY_REVERSED"
 

@@ -53,7 +53,7 @@ def test_a_fund_from_promise_to_payback(h):
     assert rec(kind="commit", party_id=asha, amount=3000000, date="2026-01-05", due="2026-02-01").ok
     assert rec(kind="receive", party_id="ghost", amount=10).reason == "UNKNOWN_PARTY"
     assert rec(kind="receive", party_id=asha, amount=2000000, date="2026-01-20").ok
-    assert rec(kind="receive", party_id=asha, amount=10, currency="USD").reason == "CURRENCY_MISMATCH"
+    assert rec(kind="receive", party_id=asha, amount=10, currency="USD").reason == "RATE_NEEDED"
     assert rec(kind="allocate", amount=2500000, purpose="Lower Parel outlet").reason == "NOT_ENOUGH_AVAILABLE"
     assert rec(kind="allocate", amount=1500000, purpose="Lower Parel outlet", date="2026-01-25").ok
     wrong = rec(kind="cost", amount=99999, note="typo").fields["entry"]["entry_id"]

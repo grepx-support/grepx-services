@@ -11,26 +11,43 @@
 And utilisation: of the money put to use, how much was actually spent."""
 from __future__ import annotations
 
-from .totals import totals
+from .totals import live, totals, uses
 
 
-def balance_sheet(funds: list[dict], entries: list[dict]) -> dict:
-    cash = in_use = owed = capital = paid_back = costs = loan_paid = loan_interest = loan_costs = 0
+def line(label: str, rows: list[tuple[str, int]]) -> dict:
+    """A balance-sheet line with the rows behind it (drill-down)."""
+    rows = [(n, a) for n, a in rows if a]
+    return {"label": label, "amount": sum(a for _, a in rows), "rows": [{"label": n, "amount": a} for n, a in sorted(rows, key=lambda r: -abs(r[1]))]}
+
+
+def balance_sheet(funds: list[dict], entries: list[dict], names: dict[str, str] | None = None, as_of: str = "") -> dict:
+    """As of a date (default: everything). Each line carries its rows: per fund, per use, per lender, per partner."""
+    names = names or {}
+    entries = [e for e in entries if not as_of or e["date"] <= as_of]
+    cash, in_use, owed, capital, paid_back, costs, loan_side = [], {}, [], {}, {}, [], []
     for f in funds:
-        t = totals([e for e in entries if e["fund_id"] == f["fund_id"]], f.get("kind") == "loan")
-        cash += t["available"]
-        in_use += t["allocated"]
-        if f.get("kind") == "loan":
-            owed += t["owed"]
-            loan_paid, loan_interest, loan_costs = loan_paid + t["returned"], loan_interest + t["interest"], loan_costs + t["costs"]
-        else:
-            capital, paid_back, costs = capital + t["received"], paid_back + t["returned"], costs + t["costs"]
-    equity = capital - paid_back - costs + loan_paid - loan_interest - loan_costs
-    return {"assets": [["Cash in the funds", cash], ["Put to use (at cost)", in_use]], "assets_total": cash + in_use,
-            "liabilities": [["Loans owed", owed]], "liabilities_total": owed,
-            "equity": [["Capital put in", capital], ["Paid back to partners", -paid_back], ["Fund costs", -costs], ["Loan repayments made by the business", loan_paid],
-                       ["Loan interest", -loan_interest], ["Loan costs", -loan_costs]], "equity_total": equity,
-            "balances": cash + in_use == owed + equity}
+        mine = [e for e in entries if e["fund_id"] == f["fund_id"]]
+        loan, t = f.get("kind") == "loan", totals(mine, f.get("kind") == "loan")
+        cash.append((f["name"], t["available"]))
+        for u in uses(mine):
+            in_use[u["purpose"]] = in_use.get(u["purpose"], 0) + u["amount"]
+        if loan:
+            owed.append((f["name"], t["owed"]))
+            loan_side += [(f"{f['name']}: repaid by the business", t["returned"]), (f"{f['name']}: interest", -t["interest"]), (f"{f['name']}: costs", -t["costs"])]
+            continue
+        costs.append((f["name"], -t["costs"]))
+        for e in live(mine):
+            if e["kind"] in ("receive", "return") and e.get("party_id"):
+                book = capital if e["kind"] == "receive" else paid_back
+                who = names.get(e["party_id"], "?")
+                book[who] = book.get(who, 0) + int(e["amount"]) * (1 if e["kind"] == "receive" else -1)
+    assets = [line("Cash in the funds", cash), line("Put to use (at cost)", list(in_use.items()))]
+    liabilities = [line("Loans owed", owed)]
+    equity = [line("Capital put in", list(capital.items())), line("Paid back to partners", list(paid_back.items())), line("Fund costs", costs),
+              line("Loans: repaid by the business less interest and costs", loan_side)]
+    a, l, q = (sum(x["amount"] for x in side) for side in (assets, liabilities, equity))
+    return {"as_of": as_of, "assets": assets, "assets_total": a, "liabilities": liabilities, "liabilities_total": l, "equity": equity,
+            "equity_total": q, "balances": a == l + q}
 
 
 def utilisation(entries: list[dict]) -> list[dict]:

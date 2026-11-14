@@ -2,11 +2,12 @@
 # This file is part of the GrepX platform and is proprietary and confidential.
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
-"""RECORD - one movement of a fund. Refused when its currency is not the fund's (converting comes later), when a
-promise / money in / payback names no party of the business, or when it would spend more than the fund has."""
+"""RECORD - one movement of a fund. Money in another currency is converted at the rate given (units of the fund's
+currency for one unit of the money's), and the original amount, currency and rate are kept. Refused when a promise /
+money in / payback names no party of the business, or when it would spend more than the fund has."""
 from grepx_service import RequestContext, new_key, now_iso
 
-from domain import NEEDS_PARTY, TAKES_CASH, clean_entry, currency, minor, totals
+from domain import NEEDS_PARTY, TAKES_CASH, clean_entry, convert, currency, minor, totals
 from dto import ENTRIES, FUNDS, PARTIES, ReasonCode
 from .common import entries, mine, tenant
 
@@ -22,17 +23,21 @@ def handle(ctx: RequestContext) -> None:
         e = clean_entry(ctx.fields)
         cur = currency(ctx.text("currency") or fund["currency"])
         amount = minor(ctx.get("amount"), cur)
+        original = None
+        if cur != fund["currency"]:
+            if not ctx.get("rate"):
+                return ctx.reject(ReasonCode.RATE_NEEDED)
+            original = {"amount": amount, "currency": cur, "rate": str(ctx.get("rate"))}
+            amount, cur = convert(amount, cur, fund["currency"], ctx.get("rate")), fund["currency"]
     except ValueError as exc:
         return ctx.reject(str(exc))
-    if cur != fund["currency"]:
-        return ctx.reject(ReasonCode.CURRENCY_MISMATCH)
     if e["kind"] in NEEDS_PARTY and mine(ctx, PARTIES, e["party_id"], t) is None:
         return ctx.reject(ReasonCode.UNKNOWN_PARTY)
     loan = fund.get("kind") == "loan"
     if e["kind"] in TAKES_CASH and not (loan and e["kind"] == "return") and amount > totals(entries(ctx, t, fund_id=fund["_key"]), loan)["available"]:
         return ctx.reject(ReasonCode.NOT_ENOUGH_AVAILABLE)
     row = {**e, "fund_id": fund["_key"], "amount": amount, "currency": cur, "tenant_id": t, "at": now_iso(), "by": ctx.text("actor_name"),
-           "reversed": False}
+           "reversed": False, **({"original": original} if original else {})}
     key = new_key()[:14]
     ctx.emitter.submit(ENTRIES, key, "ACCEPTED", row)
     ctx.accept({"entry": {**row, "entry_id": key}})

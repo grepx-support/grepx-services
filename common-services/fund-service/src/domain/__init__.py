@@ -6,8 +6,13 @@
 from .balance import balance_sheet, utilisation
 from .projection import against_plan, clean_plan, project
 from .entries import FUND_KINDS, KINDS, NEEDS_PARTY, TAKES_CASH, clean_entry, clean_fund
-from .money import currency, major, minor
+from .advice import suggestions
+from .forecast import forecast
+from .position import position
+from .money import convert, currency, major, minor
+from .spending import linked
+from .statement import statement
 from .totals import months, overdue, parties, totals, uses
 
-__all__ = ["against_plan", "balance_sheet", "clean_plan", "project", "utilisation", "FUND_KINDS", "KINDS", "NEEDS_PARTY", "TAKES_CASH", "clean_entry", "clean_fund", "currency", "major", "minor", "months",
+__all__ = ["against_plan", "balance_sheet", "clean_plan", "project", "utilisation", "FUND_KINDS", "KINDS", "NEEDS_PARTY", "TAKES_CASH", "clean_entry", "clean_fund", "convert", "currency", "forecast", "linked", "position", "statement", "suggestions", "major", "minor", "months",
            "overdue", "parties", "totals", "uses"]
