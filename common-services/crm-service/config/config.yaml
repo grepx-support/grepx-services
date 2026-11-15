@@ -1,0 +1,14 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+service_name: crm-service
+snapshot_table: crm_requests
+project: platform
+description: "CRM for any business: people and companies, deals on a pipeline the business shapes (drag between stages, won / lost with why), activities (calls, meetings, notes, tasks with due dates), one timeline per contact, my agenda, forecast, win rate and deals going stale. Keywords: crm, contacts, customers, leads, deals, pipeline, sales, follow up, activities"
+owns: [crm_contacts, crm_deals, crm_activities, crm_pipelines]
+tables:
+  crm_contacts: [tenant_id, company_id]
+  crm_deals: [tenant_id, contact_id, stage]
+  crm_activities: [tenant_id, contact_id, deal_id]
+  crm_pipelines: []
