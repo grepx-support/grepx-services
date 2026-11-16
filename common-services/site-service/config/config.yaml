@@ -1,0 +1,11 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+service_name: site-service
+snapshot_table: site_requests
+project: platform
+description: "Each business's own public web page (its address /b/<name>): what its owner chooses to show - name, headline, colour, logo, contact and opening hours, social links (Instagram, Facebook, YouTube), promotions with end dates, highlights, brands, videos - and which sections are switched on. Keywords: public page, landing page, website, mini site, storefront, promotions, offers, social media, instagram, facebook, youtube, branding"
+owns: [business_pages]
+tables:
+  business_pages: []
