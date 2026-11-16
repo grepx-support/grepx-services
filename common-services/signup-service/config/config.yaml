@@ -1,0 +1,12 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+service_name: signup-service
+snapshot_table: signup_requests
+project: platform
+description: "Self-service sign-up of a new business: the owner's details are held while their email (a link) and mobile (a 6-digit code) are confirmed, then the product sets the business up and its short name becomes its web address (/b/<name>, later <name>.<domain>); old names keep pointing to the new one. Keywords: sign up, signup, register business, onboarding, trial, verify email, OTP, phone code, slug, subdomain, tenant address, SaaS"
+owns: [signups, addresses]
+tables:
+  signups: [stage, slug, email]      # "stage", never "status": status is the row's own envelope field
+  addresses: [business_id, product]
