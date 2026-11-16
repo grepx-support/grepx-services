@@ -111,3 +111,19 @@ def test_a_price_agreed_per_line_reaches_stock(h):
     assert call(h, action="SAVE", supplier_id="bakery", location_id="wh", lines=[{"item_id": "bread", "qty": 1, "price": "-1"}]).reason == "INVALID_PRICE"
     assert call(h, action="RECEIVE", po_id=v.fields["order"]["po_id"]).ok
     assert h.rows("fixture_goods_in")[-1]["lines"] == [{"item_id": "bread", "qty": 10, "price": 4.5}]
+
+
+def test_an_order_can_arrive_in_several_deliveries(h):
+    """part: each delivery goes to stock on its own; the order stays open until all has come (or is closed short)."""
+    po = call(h, action="SAVE", supplier_id="bakery", location_id="wh", lines=[{"item_id": "bread", "qty": 10, "price": 4}]).fields["order"]
+    assert call(h, action="RECEIVE", po_id=po["po_id"], part=True).reason == "NO_LINES"
+    first = call(h, action="RECEIVE", po_id=po["po_id"], part=True, lines=[{"item_id": "bread", "qty": 4, "serials": ["a"]}]).fields["order"]
+    assert first["state"] == "saved" and first["received"] == [{"item_id": "bread", "qty": 4, "price": 4, "serials": ["a"]}]
+    assert call(h, action="SAVE", po_id=po["po_id"], lines=[{"item_id": "bread", "qty": 1}]).reason == "PART_RECEIVED"
+    second = call(h, action="RECEIVE", po_id=po["po_id"], part=True, lines=[{"item_id": "bread", "qty": 6, "serials": ["b"]}]).fields["order"]
+    assert second["state"] == "received" and second["received"][0]["qty"] == 10 and second["received"][0]["serials"] == ["a", "b"]
+    assert len(second["deliveries"]) == 2 and [r["lines"][0]["qty"] for r in h.rows("fixture_goods_in")[-2:]] == [4, 6]
+    short = call(h, action="SAVE", supplier_id="bakery", location_id="wh", lines=[{"item_id": "bread", "qty": 5}]).fields["order"]
+    call(h, action="RECEIVE", po_id=short["po_id"], part=True, lines=[{"item_id": "bread", "qty": 2}])
+    closed = call(h, action="CANCEL", po_id=short["po_id"]).fields["order"]
+    assert closed["state"] == "received" and closed["short"] is True and closed["received"][0]["qty"] == 2

@@ -17,6 +17,8 @@ def handle(ctx: RequestContext) -> None:
         if not ctx.text("po_id"):
             return new_order(ctx, biz, ctx.text("supplier_id"), ctx.text("location_id"), lines, ctx.text("note"))
         po = order(ctx, biz["_key"])
+        if po.get("deliveries"):                       # part of it has arrived: what was ordered stays as it was
+            raise ValueError(ReasonCode.PART_RECEIVED.value)
         supplier = find_supplier(ctx, biz["_key"], ctx.text("supplier_id") or po["supplier_id"])
         place = holding(ctx, biz["_key"], ctx.text("location_id") or po["location_id"])
         po.update({"lines": lines, "supplier_id": supplier["_key"], "supplier_name": supplier.get("name", ""),

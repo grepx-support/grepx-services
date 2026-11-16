@@ -22,5 +22,5 @@ def may_receive_at(place):
 
 
 def receive(ctx, tenant, order, lines):
-    ctx.request(GOODS_IN, f"po-{order['po_id']}", {"action": "TAKE_IN", "tenant_id": tenant, "location_id": order["location_id"], "lines": lines,
+    ctx.request(GOODS_IN, f"po-{order['po_id']}" + (f"-{order['delivery_no']}" if order.get("delivery_no", 1) > 1 else ""), {"action": "TAKE_IN", "tenant_id": tenant, "location_id": order["location_id"], "lines": lines,
                                                     "ref": order["po_id"]}, "fixture-stock-service")

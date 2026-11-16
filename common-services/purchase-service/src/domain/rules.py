@@ -76,3 +76,24 @@ def message(business: str, supplier: str, number: str, deliver_to: str, lines: l
     if note:
         text += ["", note]
     return "\n".join(text)
+
+
+def add_up(earlier: list[dict], got: list[dict]) -> list[dict]:
+    """What has arrived so far: per item the quantities added, serials put together, the latest price kept."""
+    total: dict[str, dict] = {}
+    for line in [*(earlier or []), *(got or [])]:
+        row = total.setdefault(line["item_id"], {"item_id": line["item_id"], "qty": 0})
+        row["qty"] = round(row["qty"] + float(line.get("qty") or 0), 4)
+        if float(row["qty"]).is_integer():
+            row["qty"] = int(row["qty"])
+        if line.get("price") is not None:
+            row["price"] = line["price"]
+        if line.get("serials"):
+            row["serials"] = [*row.get("serials", []), *line["serials"]]
+    return list(total.values())
+
+
+def all_arrived(ordered: list[dict], received: list[dict]) -> bool:
+    """Every ordered line has arrived in full (more is fine)."""
+    got = {l["item_id"]: float(l.get("qty") or 0) for l in received or []}
+    return all(got.get(l["item_id"], 0) >= float(l.get("qty") or 0) for l in ordered or [])
