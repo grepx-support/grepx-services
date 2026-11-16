@@ -6,6 +6,7 @@
 from decimal import Decimal
 from pathlib import Path
 
+import grepx_contracts as gc
 import pytest
 from grepx_config import load_config
 from grepx_testkit.harness import ServiceHarness
@@ -44,6 +45,8 @@ def test_due_buckets():
 # ---------------- service ----------------
 @pytest.fixture()
 def h():
+    if not hasattr(gc, "business"):     # for business products (they run business-service); blood donation does not
+        pytest.skip("needs a business product's contracts (business-service)")
     harness = ServiceHarness().add(cfg, T, handle, cfg.live_criteria)
     harness.seed("businesses", "hft", {"business_id": "hft", "tenant_id": "hft", "timezone": "UTC", "currency": "SGD"})
     harness.seed("businesses", "cafe", {"business_id": "cafe", "tenant_id": "cafe", "timezone": "UTC"})
