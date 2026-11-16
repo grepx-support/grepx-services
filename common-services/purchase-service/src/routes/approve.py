@@ -14,7 +14,7 @@ def handle(ctx: RequestContext) -> None:
     def body():
         biz = business(ctx)
         po = {k: v for k, v in order(ctx, biz["_key"]).items() if not k.startswith("_")}
-        po["approval"] = decide(po.get("approval"), bool(ctx.get("approve")), ctx.text("actor_name"), ctx.text("note"), now_iso())
+        po["approval"] = decide(po.get("approval"), bool(ctx.get("approve")), ctx.text("approved_by") or ctx.text("actor_name"), ctx.text("note"), now_iso())
         ctx.emitter.submit(Table.PURCHASE_ORDERS.value, po["po_id"], "ACCEPTED", po)
         return po
     run(ctx, body)

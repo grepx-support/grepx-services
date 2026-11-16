@@ -13,7 +13,7 @@ from .common import run, set_costs
 
 def handle(ctx: RequestContext) -> None:
     def body(ap):
-        bill = approve(ap.bill(ctx.text("bill_id")), ctx.text("note"), ctx.text("actor_name"))
+        bill = approve(ap.bill(ctx.text("bill_id")), ctx.text("note"), ctx.text("approved_by") or ctx.text("actor_name"))   # approved_by: decided in approval-service
         costs = new_costs(bill) if bill.get("recost", True) else {}
         recosted = costs if set_costs(ctx, ap.tenant, bill, costs) else {}
         return {"bill": ap.save(bill["bill_id"], bill), "recosted": recosted}

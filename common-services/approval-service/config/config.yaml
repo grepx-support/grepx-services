@@ -1,0 +1,11 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+service_name: approval-service
+snapshot_table: approval_requests
+project: platform
+description: "Approvals at every stage (maker-checker): someone asks - a write-off, a transfer, a price change, a purchase order over the limit, a supplier bill - the people whose role may decide are emailed, one of them (never the one who asked, unless nobody else can) says yes or no with a note, and on yes the held request goes to the service that owns it, on behalf of the one who asked; the asker is told either way. Keywords: approval, approve, reject, maker checker, four eyes, authorisation, sign-off, workflow, inbox, escalation"
+owns: [approvals]
+tables:
+  approvals: [tenant_id, state, kind, ref]
