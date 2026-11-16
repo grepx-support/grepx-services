@@ -6,6 +6,7 @@
 plugin - here a test one) to take the goods in."""
 from pathlib import Path
 
+import grepx_contracts as gc
 import pytest
 from grepx_config import load_config
 from grepx_testkit.harness import ServiceHarness
@@ -20,6 +21,8 @@ T = "purchase_requests"
 
 @pytest.fixture()
 def h():
+    if not hasattr(gc, "business"):     # purchasing is for business products (they run business-service); blood donation does not
+        pytest.skip("needs a business product's contracts (business-service)")
     harness = ServiceHarness().add(cfg, T, handle, cfg.live_criteria)
     harness.seed("businesses", "hft", {"business_id": "hft", "tenant_id": "hft", "name": "HFT"})
     harness.seed("locations", "wh", {"tenant_id": "hft", "name": "Warehouse", "kind": "warehouse", "receiving": True, "active": True})
