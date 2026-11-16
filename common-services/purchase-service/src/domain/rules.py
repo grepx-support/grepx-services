@@ -6,6 +6,17 @@
 from __future__ import annotations
 
 
+def _price(value) -> float:
+    """A unit price: 0 or more, up to a hundred million, to 4 decimals. Raises INVALID_PRICE."""
+    try:
+        number = round(float(value), 4)
+    except (TypeError, ValueError):
+        raise ValueError("INVALID_PRICE")
+    if number < 0 or number > 100_000_000:
+        raise ValueError("INVALID_PRICE")
+    return int(number) if number.is_integer() else number
+
+
 def _qty(value, allow_zero: bool = False) -> float:
     try:
         number = round(float(value), 4)
@@ -17,7 +28,7 @@ def _qty(value, allow_zero: bool = False) -> float:
 
 
 def clean_lines(lines) -> list[dict]:
-    """[{item_id, qty, recommended?}] - zero lines dropped, an item listed twice adds up."""
+    """[{item_id, qty, recommended?, price?}] - zero lines dropped, an item listed twice adds up (the last price given wins)."""
     out: dict[str, dict] = {}
     for line in lines or []:
         item = str((line or {}).get("item_id") or "").strip()
@@ -30,6 +41,8 @@ def clean_lines(lines) -> list[dict]:
         row["qty"] = round(row["qty"] + qty, 4)
         if line.get("recommended") not in (None, ""):
             row["recommended"] = _qty(line["recommended"], allow_zero=True)
+        if line.get("price") not in (None, ""):            # the price agreed with the supplier for one (else the goods' cost)
+            row["price"] = _price(line["price"])
     if not out:
         raise ValueError("NO_LINES")
     return list(out.values())
@@ -37,14 +50,18 @@ def clean_lines(lines) -> list[dict]:
 
 def received_lines(ordered: list[dict], changed: list[dict] | None) -> list[dict]:
     """ORD-07: receive in full (no changes) or with changed quantities (and serial numbers); an item not on the order may arrive too."""
+    price = {l["item_id"]: l["price"] for l in ordered if l.get("price") is not None}
     if not changed:
-        return [{"item_id": l["item_id"], "qty": l["qty"]} for l in ordered]
+        return [{"item_id": l["item_id"], "qty": l["qty"], **({"price": l["price"]} if l.get("price") is not None else {})} for l in ordered]
     got: dict[str, dict] = {}
     for line in changed:
         item = str(line.get("item_id") or "")
         if not item:
             raise ValueError("UNKNOWN_ITEM")
         got[item] = {"item_id": item, "qty": _qty(line.get("qty"), allow_zero=True)}
+        given = line.get("price") if line.get("price") not in (None, "") else price.get(item)
+        if given is not None:                        # what one cost: as ordered, or as the supplier's invoice says
+            got[item]["price"] = _price(given)
         serials = [str(x).strip() for x in line.get("serials") or [] if str(x).strip()]
         if serials:                                  # products that track units (IMEI / serial) pass them on to stock
             got[item]["serials"] = serials
@@ -53,8 +70,8 @@ def received_lines(ordered: list[dict], changed: list[dict] | None) -> list[dict
 
 def message(business: str, supplier: str, number: str, deliver_to: str, lines: list[dict], names: dict, note: str = "") -> str:
     """ORD-06: the order as plain text to paste into WhatsApp."""
-    rows = [f"- {names.get(l['item_id'], {}).get('name', l['item_id'])}: {l['qty']} {names.get(l['item_id'], {}).get('unit', '')}".rstrip()
-            for l in lines]
+    rows = [(f"- {names.get(l['item_id'], {}).get('name', l['item_id'])}: {l['qty']} {names.get(l['item_id'], {}).get('unit', '')}".rstrip()
+             + (f" @ {l['price']:g}" if l.get("price") is not None else "")) for l in lines]
     text = [f"Order {number} from {business}", f"To: {supplier}", f"Deliver to: {deliver_to}", "", *rows]
     if note:
         text += ["", note]

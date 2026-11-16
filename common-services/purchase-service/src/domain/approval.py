@@ -10,8 +10,9 @@ PENDING, APPROVED, REJECTED = "pending", "approved", "rejected"
 
 
 def order_value(lines: list[dict], items: dict[str, dict]) -> float:
-    """Qty x the item's cost, in the business currency."""
-    return round(sum(float(l["qty"]) * float(items.get(l["item_id"], {}).get("cost") or 0) for l in lines), 2)
+    """Qty x the price agreed on the line (else the item's cost), in the business currency."""
+    return round(sum(float(l["qty"]) * float(l["price"] if l.get("price") is not None else items.get(l["item_id"], {}).get("cost") or 0)
+                     for l in lines), 2)
 
 
 def approval_for(value: float, limit: float, current: dict | None) -> dict | None:

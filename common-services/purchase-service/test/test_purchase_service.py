@@ -98,3 +98,16 @@ def test_big_orders_wait_for_the_owner(h):
     assert call(h, action="SEND", po_id=big["po_id"], channels=["whatsapp"]).ok
     more = call(h, action="SAVE", po_id=big["po_id"], lines=[{"item_id": "lids", "qty": 30}]).fields["order"]
     assert more["approval"]["state"] == "pending"                                                     # 270 > the 180 approved
+
+
+def test_a_price_agreed_per_line_reaches_stock(h):
+    """Products that buy at a price per order (laptops from a distributor): the line's price values the order, shows in
+    the message and goes to stock on receipt - as ordered, or as the supplier's invoice says."""
+    assert received_lines([{"item_id": "a", "qty": 2, "price": 700}], None) == [{"item_id": "a", "qty": 2, "price": 700}]
+    assert received_lines([{"item_id": "a", "qty": 2, "price": 700}], [{"item_id": "a", "qty": 2, "price": "690.5", "serials": ["S1", "S2"]}]) \
+        == [{"item_id": "a", "qty": 2, "price": 690.5, "serials": ["S1", "S2"]}]
+    v = call(h, action="SAVE", supplier_id="bakery", location_id="wh", lines=[{"item_id": "bread", "qty": 10, "price": "4.5"}])
+    assert v.ok and v.fields["order"]["value"] == 45 and "Bread: 10 loaf @ 4.5" in v.fields["order"]["text"]
+    assert call(h, action="SAVE", supplier_id="bakery", location_id="wh", lines=[{"item_id": "bread", "qty": 1, "price": "-1"}]).reason == "INVALID_PRICE"
+    assert call(h, action="RECEIVE", po_id=v.fields["order"]["po_id"]).ok
+    assert h.rows("fixture_goods_in")[-1]["lines"] == [{"item_id": "bread", "qty": 10, "price": 4.5}]
