@@ -1,0 +1,11 @@
+# Copyright (c) 2026 GrepX Private Limited (grepx.sg). All rights reserved.
+# This file is part of the GrepX platform and is proprietary and confidential.
+# Unauthorised copying, use, modification or distribution is strictly prohibited.
+
+service_name: ai-service
+snapshot_table: ai_requests
+project: platform
+description: "AI for every product: a question with the business's own data as context goes to a large language model (Anthropic Claude, key in GREPX_AI_KEY), the answer comes back; each business switches it on and has a monthly limit; every call is counted. Without a key it says so and the product falls back to its own rules. Keywords: ai, assistant, llm, claude, ask, summarise, draft, brief, suggest, copilot, usage, limit"
+owns: [ai_usage]
+tables:
+  ai_usage: [tenant_id, month]
