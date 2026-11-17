@@ -57,6 +57,7 @@ def test_sign_up_confirm_set_up_and_address():
     sid = signup["signup_id"]
     assert (signup["stage"], signup["email"], signup["phone"]) == ("pending", "ra**@galaxy.test", "+91*******345")
     assert "password_enc" not in signup and "code_digest" not in signup
+    assert signup["start_with"] == "demo"                                         # sample data unless asked for an empty shop
     row = h.rows("signups")[0]
     assert row["password_enc"] == "sealed-pw" and len(row["code_digest"]) == 64
 
@@ -109,6 +110,12 @@ def test_codes_expire_tries_run_out_and_resend_waits(monkeypatch):
     monkeypatch.setattr(d, "utcnow", lambda: now + timedelta(hours=d.HOLD_HOURS + 1))
     assert call(h, "CONFIRM_EMAIL", signup_id=sid, token="x").reason == "SIGNUP_EXPIRED"
     assert call(h, "CHECK", slug="tries").fields["available"] is True                 # an abandoned sign-up frees its name
+
+
+def test_an_empty_shop_when_asked():
+    h = harness()
+    assert call(h, "START", **ME, slug="plain", start_with="empty").fields["signup"]["start_with"] == "empty"
+    assert call(h, "START", **{**ME, "email": "x@y.test"}, slug="plain2", start_with="nonsense").fields["signup"]["start_with"] == "demo"
 
 
 def test_starting_again_replaces_and_failure_frees_the_name():

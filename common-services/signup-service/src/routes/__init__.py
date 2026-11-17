@@ -30,7 +30,7 @@ def _save(ctx: RequestContext, row: dict) -> dict:
 def _public(row: dict) -> dict:
     """What callers may see of a sign-up: never the hashes or the sealed password."""
     keep = ("signup_id", "product", "business_name", "slug", "owner_name", "stage", "email_ok", "phone_ok", "business_id",
-            "reason", "created_at", "hold_until", "code_tries")
+            "reason", "created_at", "hold_until", "code_tries", "start_with")
     return {**{k: row.get(k) for k in keep}, "email": d.masked_email(row.get("email", "")), "phone": d.masked_phone(row.get("phone", ""))}
 
 
@@ -91,7 +91,8 @@ def start(ctx: RequestContext) -> None:
            "ip": ctx.text("ip")[:64], "stage": SignupStage.PENDING.value, "email_ok": False, "phone_ok": False,
            "email_digest": d.digest(token, signup_id), "code_digest": d.digest(code, signup_id), "code_until": d.later(now, minutes=d.CODE_MINUTES),
            "code_tries": 0, "email_sends": 1, "code_sends": 1, "sent_at": d.iso(now), "created_at": d.iso(now),
-           "hold_until": d.later(now, hours=d.HOLD_HOURS), "business_id": "", "reason": ""}
+           "hold_until": d.later(now, hours=d.HOLD_HOURS), "business_id": "", "reason": "",
+           "start_with": "empty" if ctx.text("start_with") == "empty" else "demo"}      # a shop full of sample data (default), or empty
     _save(ctx, row)
     _send_link(ctx, row, token)
     _send_code(ctx, row, code)
