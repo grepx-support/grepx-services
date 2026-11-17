@@ -5,7 +5,11 @@
 service_name: ai-service
 snapshot_table: ai_requests
 project: platform
-description: "AI for every product: a question with the business's own data as context goes to a large language model (Anthropic Claude, key in GREPX_AI_KEY), the answer comes back; each business switches it on and has a monthly limit; every call is counted. Without a key it says so and the product falls back to its own rules. Keywords: ai, assistant, llm, claude, ask, summarise, draft, brief, suggest, copilot, usage, limit"
-owns: [ai_usage]
+description: "AI for every product, as a job: a question (or a chat message) with the business's own data and the product's own context is accepted at once and answered in the background by a language model - the free local engine (Ollama, a model per product: grepx-kitchen, grepx-electronics ...) or Anthropic Claude when GREPX_AI_KEY is set; chats are kept per person; each business switches AI on and has a monthly limit; every answer is counted. Keywords: ai, assistant, chat, chatgpt, llm, ollama, claude, ask, summarise, draft, brief, copilot, usage, limit"
+owns: [ai_usage, ai_jobs, ai_chats]
 tables:
   ai_usage: [tenant_id, month]
+  ai_jobs: [tenant_id, user_id, state, feature]
+  ai_chats: [tenant_id, user_id]
+subscriptions:                        # a job waiting for the model is answered here, outside the request (a model can take a minute)
+  - {table: ai_jobs, handler: jobs.answer, when: "status = 'ACCEPTED' AND state = 'thinking'"}
