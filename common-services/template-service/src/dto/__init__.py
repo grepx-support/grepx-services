@@ -9,6 +9,6 @@ from .template_field import TemplateField
 
 TEMPLATES_TABLE = "message_templates"
 SETTINGS_TABLE = "message_settings"
-CHANNELS = ("email", "sms", "whatsapp")
+CHANNELS = ("email", "sms", "whatsapp", "app")      # app: the in-app bell + Web Push
 
 __all__ = ["ReasonCode", "TemplateAction", "TemplateField", "TEMPLATES_TABLE", "SETTINGS_TABLE", "CHANNELS"]

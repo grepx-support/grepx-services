@@ -68,6 +68,9 @@ def handle(ctx: RequestContext) -> None:
         return ctx.reject(ReasonCode.ATTACHMENT_TOO_LARGE)
     channel, real = Deps.channels.get(channel_name, integration_settings(ctx))
     extra = {"attachments": files} if files else {}
+    if channel.name == "app":                       # the bell keeps it; the person's phones / browsers get a push
+        from .devices import devices_of, vapid      # noqa: PLC0415
+        extra = {**extra, "devices": devices_of(ctx, recipient), "vapid": vapid(ctx), "link": str(values.get("link") or "")}
     try:
         Deps.guard(channel.name).call(lambda: channel.send(recipient, message.subject, message.body, message.html, **extra))
         delivery, error = (Delivery.SENT if real else Delivery.LOGGED), ""

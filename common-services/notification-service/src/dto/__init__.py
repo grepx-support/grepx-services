@@ -11,5 +11,6 @@ from .reason_code import ReasonCode
 
 TEMPLATES_TABLE = gc.template.MESSAGE_TEMPLATES
 SETTINGS_TABLE = gc.template.MESSAGE_SETTINGS
+DEVICES_TABLE, KEYS_TABLE, SEEN_TABLE = "push_devices", "push_keys", "inbox_seen"
 
-__all__ = ["Delivery", "NotificationAction", "NotificationField", "ReasonCode", "TEMPLATES_TABLE", "SETTINGS_TABLE"]
+__all__ = ["DEVICES_TABLE", "KEYS_TABLE", "SEEN_TABLE", "Delivery", "NotificationAction", "NotificationField", "ReasonCode", "TEMPLATES_TABLE", "SETTINGS_TABLE"]

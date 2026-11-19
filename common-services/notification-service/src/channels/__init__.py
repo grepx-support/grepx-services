@@ -2,9 +2,10 @@
 # This file is part of the GrepX platform and is proprietary and confidential.
 # Unauthorised copying, use, modification or distribution is strictly prohibited.
 
+from .app_channel import AppChannel
 from .base import Channel, ChannelResult
 from .factory import ChannelFactory, whatsapp
 from .meta_whatsapp import MetaWhatsAppChannel
 from .smtp_email import SmtpEmailChannel
 
-__all__ = ["Channel", "ChannelResult", "ChannelFactory", "MetaWhatsAppChannel", "SmtpEmailChannel", "whatsapp"]
+__all__ = ["AppChannel", "Channel", "ChannelResult", "ChannelFactory", "MetaWhatsAppChannel", "SmtpEmailChannel", "whatsapp"]

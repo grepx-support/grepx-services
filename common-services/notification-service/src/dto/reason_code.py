@@ -15,3 +15,5 @@ class ReasonCode(str, Enum):
     ATTACHMENT_TOO_LARGE = "ATTACHMENT_TOO_LARGE"
     NOT_FAILED = "NOT_FAILED"
     ALREADY_RETRIED = "ALREADY_RETRIED"
+    MISSING_USER = "MISSING_USER"
+    BAD_SUBSCRIPTION = "BAD_SUBSCRIPTION"      # not a Web Push subscription (endpoint + keys)

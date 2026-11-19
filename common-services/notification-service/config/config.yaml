@@ -4,10 +4,13 @@
 
 service_name: notification-service
 snapshot_table: notifications
-description: "Sends email/SMS/WhatsApp from templates with admin on/off + channel settings; circuit breaker per channel. Keywords: message, email, sms, whatsapp"
+description: "Sends email/SMS/WhatsApp and in-app messages (the bell, with Web Push to phones and browsers) from templates with admin on/off + channel settings; circuit breaker per channel. Keywords: message, email, sms, whatsapp, notification, push, inbox, bell"
 project: platform
-owns: [notifications]  # tables this service is the system of record for (kept in its own database)
+owns: [notifications, push_devices, push_keys, inbox_seen]  # tables this service is the system of record for (kept in its own database)
 tables:            # created in this service's own database by setup.sh (table: [indexed fields])
   notifications: [template, channel, delivery]
+  push_devices: [user_id]          # a phone or browser that gets Web Push for a person (its subscription)
+  push_keys: []                    # this platform's VAPID key pair, made on first use
+  inbox_seen: []                   # per person: when they last opened the bell
 subscriptions:     # the scheduler's tick: send failed messages again (jobs/tick.py)
   - {table: ticks, handler: jobs.handle_tick, when: "to_service = '{service}' AND status = 'NEW'"}

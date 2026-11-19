@@ -13,3 +13,4 @@
 -e ../../platform/libs/nexus-logging
 -e ../../platform/libs/grepx-service
 pyyaml>=6
+pywebpush>=2          # Web Push for the app channel (MPL-2.0)

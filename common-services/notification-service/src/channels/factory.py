@@ -5,6 +5,7 @@
 """ChannelFactory — picks the real channel, or the log fallback when it is not configured."""
 from __future__ import annotations
 
+from .app_channel import AppChannel
 from .base import Channel
 from .log_channel import LogChannel
 from .smtp_email import SmtpEmailChannel
@@ -35,5 +36,5 @@ class ChannelFactory:
         else:
             import os
             env = {**os.environ, **{k: v for k, v in (settings or {}).items() if v not in (None, "")}}
-            channel = {c.name: c for c in (SmtpEmailChannel(env), TwilioSmsChannel(env), whatsapp(env))}.get(name)
+            channel = {c.name: c for c in (SmtpEmailChannel(env), TwilioSmsChannel(env), whatsapp(env), AppChannel())}.get(name)
         return (channel, True) if channel and channel.configured() else (self.fallback, False)
