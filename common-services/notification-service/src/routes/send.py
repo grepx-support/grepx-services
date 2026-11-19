@@ -12,6 +12,7 @@ from grepx_service import CircuitOpen, RequestContext, Resilient, now_iso
 
 from channels import ChannelFactory
 from domain import render
+from .devices import devices_of, vapid
 from dto import SETTINGS_TABLE, TEMPLATES_TABLE, Delivery, NotificationField as F, ReasonCode
 
 
@@ -69,7 +70,6 @@ def handle(ctx: RequestContext) -> None:
     channel, real = Deps.channels.get(channel_name, integration_settings(ctx))
     extra = {"attachments": files} if files else {}
     if channel.name == "app":                       # the bell keeps it; the person's phones / browsers get a push
-        from .devices import devices_of, vapid      # noqa: PLC0415
         extra = {**extra, "devices": devices_of(ctx, recipient), "vapid": vapid(ctx), "link": str(values.get("link") or "")}
     try:
         Deps.guard(channel.name).call(lambda: channel.send(recipient, message.subject, message.body, message.html, **extra))
