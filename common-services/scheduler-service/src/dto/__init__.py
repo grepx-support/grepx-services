@@ -10,5 +10,7 @@ from .schedule_kind import ScheduleKind
 
 SCHEDULES_TABLE = "schedules"
 TICKS_TABLE = "ticks"
+HEALTH_TABLE = "scheduler_health"
+NEXT_SHOWN = 5                     # next run times kept on each schedule
 
-__all__ = ["ReasonCode", "SchedulerAction", "ScheduleField", "ScheduleKind", "SCHEDULES_TABLE", "TICKS_TABLE"]
+__all__ = ["ReasonCode", "SchedulerAction", "ScheduleField", "ScheduleKind", "SCHEDULES_TABLE", "TICKS_TABLE", "HEALTH_TABLE", "NEXT_SHOWN"]

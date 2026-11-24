@@ -9,3 +9,4 @@ from enum import Enum
 class ScheduleKind(str, Enum):
     EVERY_MINUTES = "EVERY_MINUTES"
     DAILY_AT = "DAILY_AT"
+    CRON = "CRON"                  # any cron line (minute hour day month weekday) in a timezone

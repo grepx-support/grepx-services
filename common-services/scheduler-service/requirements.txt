@@ -12,3 +12,4 @@
 -e ../../platform/libs/nexus-logging
 -e ../../platform/libs/grepx-service
 pyyaml>=6
+apscheduler>=3.10,<4   # cron rules (CronTrigger) - github.com/agronholm/apscheduler

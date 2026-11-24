@@ -8,4 +8,6 @@ from enum import Enum
 
 class ReasonCode(str, Enum):
     MISSING_FIELD = "MISSING_FIELD"
-    INVALID_SCHEDULE = "INVALID_SCHEDULE"
+    INVALID_SCHEDULE = "INVALID_SCHEDULE"      # not a rule this service knows (bad cron line, time, every)
+    INVALID_TIMEZONE = "INVALID_TIMEZONE"
+    UNKNOWN_SCHEDULE = "UNKNOWN_SCHEDULE"
